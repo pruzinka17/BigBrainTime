@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct Fonts {
-    
-    func logoFont() -> Font {
+extension Font {
+
+    struct Shared {
         
-        return Font.system(size: 50, weight: .bold, design: .rounded)
+        static let logo = Font.system(size: 50, weight: .bold, design: .rounded)
     }
 }

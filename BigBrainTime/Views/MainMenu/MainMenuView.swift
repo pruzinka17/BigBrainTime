@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MainMenuView: View {
     
-    let fonts = Fonts()
+    @State var isPresentingGameSetup = false
     
     var body: some View {
         
@@ -32,6 +32,10 @@ struct MainMenuView: View {
             .padding()
         }
         .ignoresSafeArea()
+        .fullScreenCover(isPresented: $isPresentingGameSetup) {
+            
+            GameSetupView()
+        }
     }
 }
 
@@ -44,7 +48,7 @@ private extension MainMenuView {
         HStack {
                     
             Text("BIG\nBRAIN\nTIME")
-                .font(fonts.logoFont())
+                .font(.Shared.logo)
         }
     }
     
@@ -56,6 +60,7 @@ private extension MainMenuView {
             
             Button("New Game") {
                 
+                isPresentingGameSetup = true
             }
             .buttonStyle(MainMenuButtonStyle())
             
