@@ -23,7 +23,6 @@ struct Question {
 struct Player: Identifiable {
     
     let id: String
-    
     let name: String
     
     var score: Int

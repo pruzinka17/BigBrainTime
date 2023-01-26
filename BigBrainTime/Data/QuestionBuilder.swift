@@ -21,6 +21,14 @@ final class QuestionsBuilder {
         
         questions.append(Question(text: "question1", answers: answer))
         
+        answer.removeAll()
+        answer.append(Question.Answer(value: "ne", isCorrect: true))
+        answer.append(Question.Answer(value: "ahoj", isCorrect: false))
+        answer.append(Question.Answer(value: "cau", isCorrect: false))
+        answer.append(Question.Answer(value: "pip", isCorrect: false))
+        
+        questions.append(Question(text: "question2", answers: answer))
+        
         return questions.shuffled()
     }
 }
