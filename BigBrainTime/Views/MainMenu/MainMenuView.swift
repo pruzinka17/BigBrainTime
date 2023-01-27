@@ -13,28 +13,31 @@ struct MainMenuView: View {
     
     var body: some View {
         
-        ZStack {
+        GeometryReader { proxy in
             
-            Color.cyan
-            
-            VStack {
+            ZStack {
                 
-                Spacer()
-                
-                makeTitle()
-                
-                Spacer()
-                
-                makeButtons()
-                
-                Spacer()
+                Color.cyan
+                    
+                    VStack {
+                        
+                        Spacer()
+                        
+                        makeTitle()
+                        
+                        Spacer()
+                        
+                        makeButtons(proxy: proxy)
+                        
+                        Spacer()
+                    }
+                    .padding()
             }
-            .padding()
-        }
-        .ignoresSafeArea()
-        .fullScreenCover(isPresented: $isPresentingGameSetup) {
-            
-            GameSetupView()
+            .ignoresSafeArea()
+            .fullScreenCover(isPresented: $isPresentingGameSetup) {
+                
+                GameSetupView()
+            }
         }
     }
 }
@@ -47,32 +50,39 @@ private extension MainMenuView {
         
         HStack {
                     
-            Text("BIG\nBRAIN\nTIME")
+            Text(Constants.logoText)
                 .font(.Shared.logo)
         }
     }
     
-    @ViewBuilder func makeButtons() -> some View {
+    @ViewBuilder func makeButtons(proxy: GeometryProxy) -> some View {
+        
+        let buttonWidth: CGFloat = proxy.frame(in: .local).width / 2
         
         HStack {
             
             Spacer()
             
-            Button("New Game") {
+            Button(Constants.newGameButtonText) {
                 
                 isPresentingGameSetup = true
             }
-            .buttonStyle(MainMenuButtonStyle())
-            
-            Spacer()
-            
-            Button("settings") {
-                
-            }
-            .buttonStyle(MainMenuButtonStyle())
+            .font(.Shared.newGameButton)
+            .buttonStyle(MainMenuButtonStyle(width: buttonWidth))
             
             Spacer()
         }
+    }
+}
+
+//MARK: - Constants
+
+private extension MainMenuView {
+    
+    enum Constants {
+        
+        static let logoText = "BIG\nBRAIN\nTIME"
+        static let newGameButtonText = "New Game"
     }
 }
 

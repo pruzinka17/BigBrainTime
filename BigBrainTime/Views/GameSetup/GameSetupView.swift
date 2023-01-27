@@ -13,10 +13,12 @@ struct GameSetupView: View {
     
     @FocusState private var inFocus: Bool
     
-    @State var isPresentingGame = false
+    @State var isPresentingGame: Bool = false
     
     @State var playerName: String = ""
+    
     @State var players: [Player] = []
+    @State var selectedPlayer: String?
     
     var body: some View {
         
@@ -33,13 +35,7 @@ struct GameSetupView: View {
                 
                 Spacer()
                 
-                Button("Start game") {
-                    
-                    isPresentingGame = true
-                }
-                .padding()
-                .foregroundColor(.black)
-                .fontWeight(.bold)
+                makeBottomBar()
             }
         }
         .onAppear {
@@ -65,10 +61,39 @@ private extension GameSetupView {
         return game
     }
     
+    func removePlayer(id: String) {
+        
+        players.removeAll { $0.id == id }
+    }
+    
     func addPlayer() {
         
         players.append(Player(id: UUID().uuidString, name: playerName, score: 0))
         playerName = ""
+    }
+    
+    func isPlayerSelected(id: String) -> Bool {
+        
+        return id == selectedPlayer
+    }
+    
+    func handleSelection(for id: String) {
+        
+        if selectedPlayer == id {
+            
+            players.removeAll { $0.id == id }
+            return
+        }
+        
+        selectedPlayer = id
+    }
+    
+    func isLobbyFull() -> Bool {
+        
+        if players.count > 12 {
+            return true
+        }
+        return false
     }
 }
 
@@ -89,7 +114,7 @@ private extension GameSetupView {
                     .foregroundColor(.black)
                     .fontWeight(.bold)
             }
-            .padding()
+            .padding(.leading)
             
             Spacer()
         }
@@ -108,44 +133,47 @@ private extension GameSetupView {
             
             ForEach(players) { player in
                 
-                RoundedRectangle(cornerRadius: 10)
-                    .frame(height: 55)
-                    .overlay {
-                        VStack {
-                            Text("name: \(player.name)")
-                                .foregroundColor(.white)
-                            Text("score: \(player.score)")
-                                .foregroundColor(.white)
-                        }
+                let deletePlayer = isPlayerSelected(id: player.id)
+                
+                PlayerSetupTabView(
+                    player: player,
+                    deletePlayer: deletePlayer,
+                    onTap: {
+                        
+                        handleSelection(for: player.id)
                     }
+                )
             }
         }
         .padding()
         
         TextField("", text: $playerName)
-            .foregroundColor(.white)
-            .padding()
-            .background(content: {
-                
-                RoundedRectangle(cornerRadius: 20)
-                    .foregroundColor(.gray)
-            })
-            .shadow(radius: 6)
-            .padding()
+            .textFieldStyle(AddPlayerTextFieldStyle())
             .focused($inFocus)
-            .submitLabel(.next)
             .onSubmit {
                 
                 inFocus = true
-                addPlayer()
+                if !(players.count >= 12) && playerName.isEmpty {
+                    addPlayer()
+                }
             }
+            .padding()
         
         Button("add player") {
             
             addPlayer()
         }
-        .foregroundColor(.black)
-        .fontWeight(.bold)
+        //tahle picovina nefunguje nvm proc
+        .buttonStyle(AddPlayerButtonStyle(isInputValid: !playerName.isEmpty, isLobbyFull: isLobbyFull()))
+    }
+    
+    @ViewBuilder func makeBottomBar() -> some View {
+        
+        Button("Start game") {
+            
+            isPresentingGame = true
+        }
+        .buttonStyle(StartNewGameButtonStyle(notEnoughPlayers: players.count < 1))
     }
 }
 

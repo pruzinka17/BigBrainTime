@@ -11,6 +11,8 @@ struct GameView: View {
     
     @Environment(\.dismiss) var dismissCurrentView
     
+    @FocusState private var inFocus: Bool
+
     let game: Game
     
     var body: some View {
@@ -36,6 +38,10 @@ struct GameView: View {
                 }
             }
         }
+        .onAppear {
+            
+            inFocus = true
+        }
     }
 }
 
@@ -45,10 +51,10 @@ private extension GameView {
     
     @ViewBuilder func makeQuestion() -> some View {
         
-        let columns = [
-            GridItem(.flexible()),
-            GridItem(.flexible())
-        ]
+//        let columns = [
+//            GridItem(.flexible()),
+//            GridItem(.flexible())
+//        ]
         
         VStack {
             
@@ -80,29 +86,33 @@ private extension GameView {
         
         let frame = proxy.frame(in: .local)
         let itemHeight = frame.height / 12
+        let itemWidth = frame.width / 5
         
-        HStack {
+        ScrollView(.horizontal, showsIndicators: false) {
             
-            ForEach(game.players, id: \.name) { player in
+            HStack {
                 
-                RoundedRectangle(cornerRadius: 10)
-                    .frame(height: itemHeight)
-                    .overlay {
-                        
-                        VStack {
+                ForEach(game.players, id: \.name) { player in
+                    
+                    RoundedRectangle(cornerRadius: 10)
+                        .frame(width: itemWidth, height: itemHeight)
+                        .overlay {
                             
-                            Text(player.name)
-                                .font(.Shared.playerName)
-                                .foregroundColor(.white)
-                            
-                            Text("\(player.score)")
-                                .font(.Shared.playerScore)
-                                .foregroundColor(.white)
+                            VStack {
+                                
+                                Text(player.name)
+                                    .font(.Shared.playerName)
+                                    .foregroundColor(.white)
+                                
+                                Text("\(player.score)")
+                                    .font(.Shared.playerScore)
+                                    .foregroundColor(.white)
+                            }
                         }
-                    }
+                }
             }
+            .padding()
         }
-        .padding()
     }
 }
 
@@ -119,6 +129,14 @@ struct GameView_Previews: PreviewProvider {
                     Player(id: UUID().uuidString, name: "haha", score: 0),
                     Player(id: UUID().uuidString, name: "cau", score: 80),
                     Player(id: UUID().uuidString, name: "ne", score: 100),
+                    Player(id: UUID().uuidString, name: "haha", score: 0),
+                    Player(id: UUID().uuidString, name: "cau", score: 80),
+                    Player(id: UUID().uuidString, name: "ne", score: 100),
+                    Player(id: UUID().uuidString, name: "haha", score: 0),
+                    Player(id: UUID().uuidString, name: "cau", score: 80),
+                    Player(id: UUID().uuidString, name: "ne", score: 100),
+                    Player(id: UUID().uuidString, name: "haha", score: 0),
+                    Player(id: UUID().uuidString, name: "cau", score: 80),
                     Player(id: UUID().uuidString, name: "haha", score: 0)
                 ]
             )
