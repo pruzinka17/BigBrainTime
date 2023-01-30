@@ -9,14 +9,11 @@ import SwiftUI
 
 struct StartNewGameButtonStyle: ButtonStyle {
     
-    let notEnoughPlayers: Bool
-    
     func makeBody(configuration: Configuration) -> some View {
         
         configuration.label
             .padding()
             .foregroundColor(.black)
             .fontWeight(.bold)
-            .disabled(notEnoughPlayers)
     }
 }

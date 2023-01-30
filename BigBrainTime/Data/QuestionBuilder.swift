@@ -29,6 +29,22 @@ final class QuestionsBuilder {
         
         questions.append(Question(text: "question2", answers: answer))
         
+        answer.removeAll()
+        answer.append(Question.Answer(id: UUID().uuidString, value: "ne", isCorrect: true))
+        answer.append(Question.Answer(id: UUID().uuidString, value: "ahoj", isCorrect: false))
+        answer.append(Question.Answer(id: UUID().uuidString, value: "cau", isCorrect: false))
+        answer.append(Question.Answer(id: UUID().uuidString, value: "pip", isCorrect: false))
+        
+        questions.append(Question(text: "question3", answers: answer))
+        
+        answer.removeAll()
+        answer.append(Question.Answer(id: UUID().uuidString, value: "ne", isCorrect: true))
+        answer.append(Question.Answer(id: UUID().uuidString, value: "ahoj", isCorrect: false))
+        answer.append(Question.Answer(id: UUID().uuidString, value: "cau", isCorrect: false))
+        answer.append(Question.Answer(id: UUID().uuidString, value: "pip", isCorrect: false))
+        
+        questions.append(Question(text: "question4", answers: answer))
+        
         return questions
     }
 }

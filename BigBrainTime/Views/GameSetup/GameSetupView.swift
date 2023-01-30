@@ -65,9 +65,7 @@ private extension GameSetupView {
         return game
     }
     
-    func removePlayer(
-        name: String
-    ) {
+    func removePlayer(name: String) {
         
         playerNames.removeAll { $0 == name }
     }
@@ -76,22 +74,6 @@ private extension GameSetupView {
         
         playerNames.append(playerName)
         playerName = ""
-    }
-    
-    func isPlayerSelected(name: String) -> Bool {
-        
-        return name == selectedPlayer
-    }
-    
-    func handleSelection(for name: String) {
-        
-        if selectedPlayer == name {
-            
-            removePlayer(name: name)
-            return
-        }
-        
-        selectedPlayer = name
     }
 }
 
@@ -131,17 +113,15 @@ private extension GameSetupView {
             
             ForEach(playerNames.indices, id: \.self) { index in
                 
-                let player = playerNames[index]
-                let deletePlayer = isPlayerSelected(name: player)
+                let playerName = playerNames[index]
                 
-                PlayerSetupTabView(
-                    player: Player(id: UUID().uuidString, name: player),
-                    deletePlayer: deletePlayer,
-                    onTap: {
+                RoundedRectangle(cornerRadius: 10)
+                    .frame(height: 55)
+                    .overlay {
                         
-                        handleSelection(for: player)
+                        Text(playerName)
+                            .foregroundColor(.white)
                     }
-                )
             }
         }
         .padding()
@@ -152,27 +132,21 @@ private extension GameSetupView {
             .onSubmit {
                 
                 inFocus = true
-                
-                if !(playerNames.count >= 12) && playerName.isEmpty {
-                    
-                    addPlayer()
-                }
+                addPlayer()
             }
-            .padding()
-        
-        Button("add player") {
-            
-            addPlayer()
-        }
     }
     
     @ViewBuilder func makeBottomBar() -> some View {
+        
+        let disabled = playerNames.count < 1
         
         Button("Start game") {
             
             isPresentingGame = true
         }
-        .buttonStyle(StartNewGameButtonStyle(notEnoughPlayers: playerNames.count < 1))
+        .buttonStyle(StartNewGameButtonStyle())
+        .disabled(disabled)
+        .opacity(disabled ? 0.3 : 1)
     }
 }
 

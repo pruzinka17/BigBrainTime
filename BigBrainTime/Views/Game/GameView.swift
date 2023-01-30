@@ -13,6 +13,8 @@ struct GameView: View {
     
     let game: Game
     
+    @Namespace var namespace
+    
     @State var gameEnded: Bool = false
     @State var currentPlayerIndex: Int = 0
     @State var currentQuestionIndex: Int = 0
@@ -115,7 +117,10 @@ private extension GameView {
                         }
                         .foregroundColor(.clear)
                         .background {
-                            isCurrentlyPlaying ? Color.black : Color.clear
+                            RoundedRectangle(cornerRadius: 10)
+                                .foregroundColor(.gray)
+                                .matchedGeometryEffect(id: "background", in: namespace, isSource: isCurrentlyPlaying)
+                                .animation(.default, value: isCurrentlyPlaying)
                         }
                 }
             }
@@ -140,16 +145,22 @@ private extension GameView {
                 
                 ForEach(currentQuestion.answers) { answer in
                     
-                    let isSelected = false // TODO: To be deleted!
-                    
-                    AnswerView(
-                        answer: answer,
-                        isSelected: isSelected,
-                        onTap: {
+                    RoundedRectangle(cornerRadius: 10)
+                        .foregroundColor(.clear)
+                        .frame(height: 55)
+                        .overlay {
+                            
+                            Text(answer.value)
+                        }
+                        .background(content: {
+                            
+                            RoundedRectangle(cornerRadius: 10)
+                                .foregroundColor(.gray)
+                        })
+                        .onTapGesture {
                             
                             handleAnswer(for: answer)
                         }
-                    )
                 }
             }
         }
@@ -232,31 +243,3 @@ private extension GameView {
         }
     }
 }
-
-//struct GameView_Previews: PreviewProvider {
-//
-//    static var previews: some View {
-//
-//        let questions: [Question] = QuestionsBuilder().buildQuestions()
-//
-//        GameView(
-//            game: Game(
-//                questions: questions,
-//                players: [
-//                    Player(id: UUID().uuidString, name: "haha", score: 0),
-//                    Player(id: UUID().uuidString, name: "cau", score: 80),
-//                    Player(id: UUID().uuidString, name: "ne", score: 100),
-//                    Player(id: UUID().uuidString, name: "haha", score: 0),
-//                    Player(id: UUID().uuidString, name: "cau", score: 80),
-//                    Player(id: UUID().uuidString, name: "ne", score: 100),
-//                    Player(id: UUID().uuidString, name: "haha", score: 0),
-//                    Player(id: UUID().uuidString, name: "cau", score: 80),
-//                    Player(id: UUID().uuidString, name: "ne", score: 100),
-//                    Player(id: UUID().uuidString, name: "haha", score: 0),
-//                    Player(id: UUID().uuidString, name: "cau", score: 80),
-//                    Player(id: UUID().uuidString, name: "haha", score: 0)
-//                ]
-//            )
-//        )
-//    }
-//}

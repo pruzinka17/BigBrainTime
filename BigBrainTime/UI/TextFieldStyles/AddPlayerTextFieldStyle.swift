@@ -33,6 +33,6 @@ struct AddPlayerTextFieldStyle: TextFieldStyle {
             })
             .shadow(radius: 3)
             .padding()
-            .submitLabel(.next)
+            .submitLabel(.continue)
     }
 }
