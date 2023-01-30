@@ -17,7 +17,7 @@ struct GameSetupView: View {
     
     @State var playerName: String = ""
     
-    @State var players: [Player] = []
+    @State var playerNames: [String] = []
     @State var selectedPlayer: String?
     
     var body: some View {
@@ -56,44 +56,42 @@ private extension GameSetupView {
     
     func generateGame() -> Game {
         
-        let game: Game = Game(questions: QuestionsBuilder().buildQuestions(), players: players)
+        let players = playerNames.map { Player(id: UUID().uuidString, name: $0) }
+        let game: Game = Game(
+            questions: QuestionsBuilder().buildQuestions(),
+            players: players
+        )
         
         return game
     }
     
-    func removePlayer(id: String) {
+    func removePlayer(
+        name: String
+    ) {
         
-        players.removeAll { $0.id == id }
+        playerNames.removeAll { $0 == name }
     }
     
     func addPlayer() {
         
-        players.append(Player(id: UUID().uuidString, name: playerName, score: 0))
+        playerNames.append(playerName)
         playerName = ""
     }
     
-    func isPlayerSelected(id: String) -> Bool {
+    func isPlayerSelected(name: String) -> Bool {
         
-        return id == selectedPlayer
+        return name == selectedPlayer
     }
     
-    func handleSelection(for id: String) {
+    func handleSelection(for name: String) {
         
-        if selectedPlayer == id {
+        if selectedPlayer == name {
             
-            players.removeAll { $0.id == id }
+            removePlayer(name: name)
             return
         }
         
-        selectedPlayer = id
-    }
-    
-    func isLobbyFull() -> Bool {
-        
-        if players.count > 12 {
-            return true
-        }
-        return false
+        selectedPlayer = name
     }
 }
 
@@ -131,16 +129,17 @@ private extension GameSetupView {
 
         LazyVGrid(columns: columns, spacing: 15) {
             
-            ForEach(players) { player in
+            ForEach(playerNames.indices, id: \.self) { index in
                 
-                let deletePlayer = isPlayerSelected(id: player.id)
+                let player = playerNames[index]
+                let deletePlayer = isPlayerSelected(name: player)
                 
                 PlayerSetupTabView(
-                    player: player,
+                    player: Player(id: UUID().uuidString, name: player),
                     deletePlayer: deletePlayer,
                     onTap: {
                         
-                        handleSelection(for: player.id)
+                        handleSelection(for: player)
                     }
                 )
             }
@@ -153,7 +152,9 @@ private extension GameSetupView {
             .onSubmit {
                 
                 inFocus = true
-                if !(players.count >= 12) && playerName.isEmpty {
+                
+                if !(playerNames.count >= 12) && playerName.isEmpty {
+                    
                     addPlayer()
                 }
             }
@@ -163,8 +164,6 @@ private extension GameSetupView {
             
             addPlayer()
         }
-        //tahle picovina nefunguje nvm proc
-        .buttonStyle(AddPlayerButtonStyle(isInputValid: !playerName.isEmpty, isLobbyFull: isLobbyFull()))
     }
     
     @ViewBuilder func makeBottomBar() -> some View {
@@ -173,7 +172,7 @@ private extension GameSetupView {
             
             isPresentingGame = true
         }
-        .buttonStyle(StartNewGameButtonStyle(notEnoughPlayers: players.count < 1))
+        .buttonStyle(StartNewGameButtonStyle(notEnoughPlayers: playerNames.count < 1))
     }
 }
 
