@@ -16,9 +16,8 @@ struct GameSetupView: View {
     @State var isPresentingGame: Bool = false
     
     @State var playerName: String = ""
-    
-    @State var playerNames: [String] = []
     @State var selectedPlayer: String?
+    @State var playerNames: [String] = []
     
     var body: some View {
         
@@ -27,15 +26,18 @@ struct GameSetupView: View {
             Color.cyan
                 .ignoresSafeArea()
             
-            VStack {
+            GeometryReader { proxy in
                 
-                makeTopBar()
-                
-                makePlayerSetup()
-                
-                Spacer()
-                
-                makeBottomBar()
+                VStack {
+                    
+                    makeTopBar()
+                    
+                    makePlayerSetup(proxy: proxy)
+                    
+                    Spacer()
+                    
+                    makeBottomBar()
+                }
             }
         }
         .onAppear {
@@ -47,33 +49,6 @@ struct GameSetupView: View {
             
             GameView(game: generateGame())
         }
-    }
-}
-
-//MARK: - Helper functions
-
-private extension GameSetupView {
-    
-    func generateGame() -> Game {
-        
-        let players = playerNames.map { Player(id: UUID().uuidString, name: $0) }
-        let game: Game = Game(
-            questions: QuestionsBuilder().buildQuestions(),
-            players: players
-        )
-        
-        return game
-    }
-    
-    func removePlayer(name: String) {
-        
-        playerNames.removeAll { $0 == name }
-    }
-    
-    func addPlayer() {
-        
-        playerNames.append(playerName)
-        playerName = ""
     }
 }
 
@@ -100,26 +75,29 @@ private extension GameSetupView {
         }
     }
     
-    @ViewBuilder func makePlayerSetup() -> some View {
+    @ViewBuilder func makePlayerSetup(proxy: GeometryProxy) -> some View {
         
         let columns = [
             GridItem(.flexible()),
-            GridItem(.flexible()),
-            GridItem(.flexible()),
             GridItem(.flexible())
         ]
+        
+        let frame = proxy.frame(in: .local)
+        let spacing = frame.width / Constants.spacingDivider
+        let itemHeight = frame.height / Constants.itemSizeDivider
 
-        LazyVGrid(columns: columns, spacing: 15) {
+        LazyVGrid(columns: columns, spacing: spacing) {
             
             ForEach(playerNames.indices, id: \.self) { index in
                 
                 let playerName = playerNames[index]
                 
                 RoundedRectangle(cornerRadius: 10)
-                    .frame(height: 55)
+                    .frame(height: itemHeight)
                     .overlay {
                         
                         Text(playerName)
+                            .font(.Shared.playerName)
                             .foregroundColor(.white)
                     }
             }
@@ -140,7 +118,7 @@ private extension GameSetupView {
         
         let disabled = playerNames.count < 1
         
-        Button("Start game") {
+        Button(Constants.startGameButtonTitle) {
             
             isPresentingGame = true
         }
@@ -150,10 +128,42 @@ private extension GameSetupView {
     }
 }
 
-struct GameSetupView_Previews: PreviewProvider {
+//MARK: - Helper methods
+
+private extension GameSetupView {
     
-    static var previews: some View {
+    func generateGame() -> Game {
         
-        GameSetupView()
+        let players = playerNames.map { Player(id: UUID().uuidString, name: $0) }
+        let game: Game = Game(
+            questions: QuestionsBuilder().buildQuestions(),
+            players: players
+        )
+        
+        return game
+    }
+    
+    func removePlayer(name: String) {
+        
+        playerNames.removeAll { $0 == name }
+    }
+    
+    func addPlayer() {
+        
+        playerNames.append(playerName)
+        playerName = ""
+    }
+}
+
+//MARK: - Constants
+
+private extension GameSetupView {
+    
+    enum Constants {
+        
+        static let startGameButtonTitle: String = "Start Game"
+        
+        static let spacingDivider: CGFloat = 40
+        static let itemSizeDivider: CGFloat = 14
     }
 }

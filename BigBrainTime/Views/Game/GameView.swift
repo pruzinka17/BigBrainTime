@@ -41,12 +41,10 @@ struct GameView: View {
                     
                     Spacer()
                 }
-                
-                VStack {
                     
-                    makeGameEnd()
-                }
-                .opacity(gameEnded ? 1 : 0)
+                makeGameEnd()
+                    .animation(.default, value: gameEnded)
+                    .opacity(gameEnded ? 1 : 0)
             }
         }
         .onAppear {
@@ -100,28 +98,18 @@ private extension GameView {
                     let player = game.players[index]
                     let isCurrentlyPlaying = currentPlayerIndex == index
                     
-                    RoundedRectangle(cornerRadius: 10)
-                        .frame(width: itemWidth, height: itemHeight)
-                        .overlay {
-                            
-                            VStack {
-                                
-                                Text(player.name)
-                                    .font(.Shared.playerName)
-                                    .foregroundColor(.white)
-                                
-                                Text("\(player.score)")
-                                    .font(.Shared.playerScore)
-                                    .foregroundColor(.white)
-                            }
-                        }
-                        .foregroundColor(.clear)
-                        .background {
-                            RoundedRectangle(cornerRadius: 10)
-                                .foregroundColor(.gray)
-                                .matchedGeometryEffect(id: "background", in: namespace, isSource: isCurrentlyPlaying)
-                                .animation(.default, value: isCurrentlyPlaying)
-                        }
+                    GeometryReader { proxy in
+                        
+                        PlayerTabView( //TODO: - delete button in the corner
+                            namespace: namespace.self,
+                            name: player.name,
+                            score: player.score,
+                            isCurrentlyPlaying: isCurrentlyPlaying,
+                            itemWidth: itemWidth,
+                            itemHeight: itemHeight,
+                            proxy: proxy
+                        )
+                    }
                 }
             }
             .padding()
@@ -140,6 +128,9 @@ private extension GameView {
         VStack {
             
             Text(currentQuestion.text)
+                .font(.Shared.answerTitle)
+                .padding()
+                .animation(.default, value: currentQuestion.text)
             
             LazyVGrid(columns: columns) {
                 
@@ -151,6 +142,7 @@ private extension GameView {
                         .overlay {
                             
                             Text(answer.value)
+                                .font(.Shared.answer)
                         }
                         .background(content: {
                             
@@ -161,6 +153,7 @@ private extension GameView {
                             
                             handleAnswer(for: answer)
                         }
+                        .animation(.default, value: answer.value)
                 }
             }
         }
@@ -169,13 +162,16 @@ private extension GameView {
     
     @ViewBuilder func makeGameEnd() -> some View {
         
-        RoundedRectangle(cornerRadius: 20)
-            .padding()
-            .overlay {
+        let playerScores = getSortedPlayers()
+        
+        ZStack {
+            
+            Color.gray
+                .ignoresSafeArea()
+            
+            VStack {
                 
-                VStack {
-                    
-                    Text("Game ended")
+                HStack {
                     
                     Button {
                         
@@ -186,20 +182,47 @@ private extension GameView {
                             .foregroundColor(.black)
                             .fontWeight(.bold)
                     }
+                    .padding(.leading)
+                    
+                    Spacer()
                 }
-            }
-            .padding()
-            .foregroundColor(.clear)
-            .background {
                 
-                Color.gray
+                Spacer()
+                
+                List {
+                    
+                    ForEach(playerScores) { playerScore in
+                        
+                        HStack {
+                            Text(playerScore.name)
+                                .fontWeight(.bold)
+                            
+                            Spacer()
+                            
+                            Text("\(playerScore.score)")
+                                .fontWeight(.bold)
+                        }
+                        .listRowBackground(Color.gray)
+                    }
+                }
+                .listStyle(.plain)
+                .padding()
+                
+                Spacer()
             }
+        }
     }
 }
 
 // MARK: - Helper methods
 
 private extension GameView {
+    
+    func getSortedPlayers() -> [Player] {
+        
+        let players = game.players
+        return players.sorted { $0.score > $1.score }
+    }
     
     func handleAnswer(for answer: Question.Answer) {
         
