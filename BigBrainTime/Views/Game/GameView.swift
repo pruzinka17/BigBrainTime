@@ -24,7 +24,7 @@ struct GameView: View {
         
         ZStack {
             
-            Color("background-color")
+            Color("color-background")
                 .ignoresSafeArea()
             
             GeometryReader { proxy in
@@ -33,13 +33,11 @@ struct GameView: View {
                     
                     makeTopBar()
                     
-                    makePlayerList(proxy: proxy)
-                    
-                    Spacer()
-                    
                     makeQuestion()
                     
                     Spacer()
+                    
+                    makePlayerList(proxy: proxy)
                 }
                     
                 makeGameEnd()
@@ -86,7 +84,7 @@ private extension GameView {
     @ViewBuilder func makePlayerList(proxy: GeometryProxy) -> some View {
         
         let frame = proxy.frame(in: .local)
-        let itemHeight = frame.height / 12
+        let itemHeight = frame.height / 8.5
         let itemWidth = frame.width / 5
         
         ScrollView(.horizontal, showsIndicators: false) {
@@ -98,18 +96,11 @@ private extension GameView {
                     let player = game.players[index]
                     let isCurrentlyPlaying = currentPlayerIndex == index
                     
-                        
-                    PlayerTabView(
-                        namespace: namespace.self,
-                        name: player.name,
-                        score: player.score,
-                        isCurrentlyPlaying: isCurrentlyPlaying,
-                        itemWidth: itemWidth,
-                        itemHeight: itemHeight
-                    )
+                    PlayerBubbleView(name: player.name)
+                        .frame(width: itemWidth, height: itemHeight)
+                        .animation(.default, value: isCurrentlyPlaying)
                 }
             }
-            .padding()
         }
     }
     
@@ -261,5 +252,24 @@ private extension GameView {
             
             self.currentPlayerIndex += 1
         }
+    }
+}
+
+// MARK: - Preview
+
+struct GameView_Previews: PreviewProvider {
+    
+    static var previews: some View {
+        
+        GameView(game: Game(
+            questions: QuestionsBuilder().buildQuestions(),
+            players: [
+                Player(id: UUID().uuidString, name: "mirek"),
+                Player(id: UUID().uuidString, name: "ahoj"),
+                Player(id: UUID().uuidString, name: "ne"),
+                Player(id: UUID().uuidString, name: "prosim")
+                ]
+            )
+        )
     }
 }

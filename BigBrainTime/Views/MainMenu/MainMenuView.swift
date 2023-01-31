@@ -17,14 +17,14 @@ struct MainMenuView: View {
             
             ZStack {
                 
-                Color("background-color")
+                Color("color-background")
                     .ignoresSafeArea()
                     
                     VStack {
                         
                         Spacer()
                         
-                        makeTitle()
+                        makeTitle(proxy: proxy)
                         
                         Spacer()
                         
@@ -44,11 +44,18 @@ struct MainMenuView: View {
 
 private extension MainMenuView {
     
-    @ViewBuilder func makeTitle() -> some View {
+    @ViewBuilder func makeTitle(proxy: GeometryProxy) -> some View {
+        
+        let frame = proxy.frame(in: .local)
         
         HStack {
+            
+            Rectangle()
+                .foregroundColor(Color("color-secondary"))
+                .frame(width: frame.width / 5, height: frame.height / 4)
                     
             Text(Constants.logoText)
+                .foregroundColor(Color("color-title"))
                 .font(.Shared.logo)
         }
     }
@@ -65,8 +72,7 @@ private extension MainMenuView {
                 
                 isPresentingGameSetup = true
             }
-            .font(.Shared.newGameButton)
-            .buttonStyle(MainMenuButtonStyle(width: buttonWidth))
+            .buttonStyle(MainButtonStyle(width: buttonWidth))
             
             Spacer()
         }
@@ -83,6 +89,8 @@ private extension MainMenuView {
         static let newGameButtonText = "New Game"
     }
 }
+
+// MARK: - Preview
 
 struct MainMenuView_Previews: PreviewProvider {
     

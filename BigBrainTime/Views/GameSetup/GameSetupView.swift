@@ -18,12 +18,13 @@ struct GameSetupView: View {
     @State var playerName: String = ""
     @State var selectedPlayer: String?
     @State var playerNames: [String] = []
+    @State private var category = Categories.sport
     
     var body: some View {
         
         ZStack {
             
-            Color("background-color")
+            Color("color-background")
                 .ignoresSafeArea()
             
             GeometryReader { proxy in
@@ -32,11 +33,16 @@ struct GameSetupView: View {
                     
                     makeTopBar()
                     
-                    makePlayerSetup(proxy: proxy)
+                    ScrollView {
+                        
+                        makePlayerSetup(proxy: proxy)
+                        
+                        makeCategoryChooser()
+                    }
                     
                     Spacer()
                     
-                    makeBottomBar()
+                    makeBottomBar(proxy: proxy)
                 }
             }
         }
@@ -66,7 +72,7 @@ private extension GameSetupView {
             } label: {
                 
                 Label("", systemImage: "return")
-                    .foregroundColor(.black)
+                    .foregroundColor(Color("color-secondary"))
                     .fontWeight(.bold)
             }
             .padding(.leading)
@@ -79,34 +85,41 @@ private extension GameSetupView {
         
         let columns = [
             GridItem(.flexible()),
+            GridItem(.flexible()),
+            GridItem(.flexible()),
             GridItem(.flexible())
         ]
         
         let frame = proxy.frame(in: .local)
         let spacing = frame.width / Constants.spacingDivider
-        let itemHeight = frame.height / Constants.itemSizeDivider
-
-        LazyVGrid(columns: columns, spacing: spacing) {
-            
-            ForEach(playerNames.indices, id: \.self) { index in
-                
-                let playerName = playerNames[index]
-                    
-                RoundedRectangle(cornerRadius: 10)
-                    .frame(height: itemHeight)
-                    .overlay {
-                        
-                        Text(playerName)
-                            .font(.Shared.playerName)
-                            .foregroundColor(.white)
-                    }
-                    .foregroundColor(Color("playertab-color"))
-            }
-        }
-        .padding()
         
-        TextField("", text: $playerName)
-            .textFieldStyle(AddPlayerTextFieldStyle())
+        switch playerNames.isEmpty {
+            
+            case true:
+            
+                Text("no players")
+                    .font(.system(size: 54, weight: .bold, design: .rounded))
+                    .opacity(0.3)
+                    .padding()
+            
+            case false:
+            
+                LazyVGrid(columns: columns, spacing: spacing) {
+                    
+                    ForEach(playerNames.indices, id: \.self) { index in
+                        
+                        let name = playerNames[index]
+                            
+                        PlayerBubbleView(name: name)
+                            .padding(5)
+                    }
+                }
+                .padding()
+                .animation(.default, value: playerNames)
+        }
+
+        TextField("add player", text: $playerName)
+            .textFieldStyle(AddPlayerTextFieldStyle(proxy: proxy))
             .focused($inFocus)
             .onSubmit {
                 
@@ -115,17 +128,31 @@ private extension GameSetupView {
             }
     }
     
-    @ViewBuilder func makeBottomBar() -> some View {
+    @ViewBuilder func makeCategoryChooser() -> some View {
+        
+//        Picker(selection: $category) {
+//
+//            ForEach(categories, id: \.self) { category in
+//
+//                Text(category)
+//            }
+//        }
+
+    }
+    
+    @ViewBuilder func makeBottomBar(proxy: GeometryProxy) -> some View {
         
         let disabled = playerNames.count < 1
+        let buttonWidth = proxy.frame(in: .local).width / 2
         
         Button(Constants.startGameButtonTitle) {
             
             isPresentingGame = true
         }
-        .buttonStyle(StartNewGameButtonStyle())
+        .buttonStyle(MainButtonStyle(width: buttonWidth))
         .disabled(disabled)
         .opacity(disabled ? 0.3 : 1)
+        .animation(.default, value: disabled)
     }
 }
 
@@ -160,11 +187,30 @@ private extension GameSetupView {
 
 private extension GameSetupView {
     
+    enum Categories: String, CaseIterable, Identifiable {
+        
+        case sport
+        case science
+        case general
+        
+        var id: String { self.rawValue }
+    }
+    
     enum Constants {
         
         static let startGameButtonTitle: String = "Start Game"
         
         static let spacingDivider: CGFloat = 40
         static let itemSizeDivider: CGFloat = 14
+    }
+}
+
+// MARK: - Preview
+
+struct GameSetupView_Previews: PreviewProvider {
+    
+    static var previews: some View {
+        
+        GameSetupView()
     }
 }
