@@ -39,7 +39,7 @@ struct PlayerTabView: View {
             .foregroundColor(.clear)
             .background {
                 RoundedRectangle(cornerRadius: 10)
-                    .foregroundColor(.gray)
+                    .foregroundColor(Color("playertab-color"))
                     .matchedGeometryEffect(id: "background", in: namespace, isSource: isCurrentlyPlaying)
                     .animation(.default, value: isCurrentlyPlaying)
             }

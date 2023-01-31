@@ -15,11 +15,11 @@ struct MainMenuButtonStyle: ButtonStyle {
         
         configuration.label
             .frame(width: width)
-            .foregroundColor(.white)
+            .foregroundColor(.black)
             .padding()
             .background {
                 RoundedRectangle(cornerRadius: 20)
-                    .foregroundColor(.gray)
+                    .foregroundColor(Color("button-color"))
             }
     }
 }

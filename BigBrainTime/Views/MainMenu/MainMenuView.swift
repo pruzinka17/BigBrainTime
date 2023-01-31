@@ -17,7 +17,8 @@ struct MainMenuView: View {
             
             ZStack {
                 
-                Color.cyan
+                Color("background-color")
+                    .ignoresSafeArea()
                     
                     VStack {
                         
@@ -27,13 +28,10 @@ struct MainMenuView: View {
                         
                         Spacer()
                         
-                        makeButtons(proxy: proxy)
-                        
-                        Spacer()
+                        makeButton(proxy: proxy)
                     }
                     .padding()
             }
-            .ignoresSafeArea()
             .fullScreenCover(isPresented: $isPresentingGameSetup) {
                 
                 GameSetupView()
@@ -55,7 +53,7 @@ private extension MainMenuView {
         }
     }
     
-    @ViewBuilder func makeButtons(proxy: GeometryProxy) -> some View {
+    @ViewBuilder func makeButton(proxy: GeometryProxy) -> some View {
         
         let buttonWidth: CGFloat = proxy.frame(in: .local).width / 2
         

@@ -17,12 +17,22 @@ struct questionFetched: Codable {
 
 final class QuestionsBuilder {
     
+    let test: [Question.Answer] = [
+        Question.Answer(id: UUID().uuidString, value: "nevim", isCorrect: false),
+        Question.Answer(id: UUID().uuidString, value: "jo", isCorrect: false),
+        Question.Answer(id: UUID().uuidString, value: "cau", isCorrect: true),
+        Question.Answer(id: UUID().uuidString, value: "fakt nevim", isCorrect: false)
+    ]
+    
     var questions: [Question] = []
     var results: [questionFetched] = []
     
     func fetch() -> [Question] {
         
-        guard let url = URL(string: "https://the-trivia-baasdnsjnaw.com/api/questions?limit=20")
+        questions.append(Question(text: "balls question", answers: test))
+        
+        guard let url = URL(string: "https://the-trivia-api.com/api/questions?categories=film_and_tv,food_and_drink,geography&limit=20&region=CZ&difficulty=medium&tags=chemistry,1600s,bodies_of_water,1700's,1950's"
+        )
         else {
             print("invalid url")
             return []

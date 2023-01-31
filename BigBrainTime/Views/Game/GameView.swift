@@ -24,7 +24,7 @@ struct GameView: View {
         
         ZStack {
             
-            Color.cyan
+            Color("background-color")
                 .ignoresSafeArea()
             
             GeometryReader { proxy in

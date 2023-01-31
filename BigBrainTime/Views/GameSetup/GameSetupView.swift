@@ -23,7 +23,7 @@ struct GameSetupView: View {
         
         ZStack {
             
-            Color.cyan
+            Color("background-color")
                 .ignoresSafeArea()
             
             GeometryReader { proxy in
@@ -100,6 +100,7 @@ private extension GameSetupView {
                             .font(.Shared.playerName)
                             .foregroundColor(.white)
                     }
+                    .foregroundColor(Color("playertab-color"))
             }
         }
         .padding()
