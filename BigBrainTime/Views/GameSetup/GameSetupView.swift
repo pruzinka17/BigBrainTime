@@ -137,7 +137,7 @@ private extension GameSetupView {
         
         let players = playerNames.map { Player(id: UUID().uuidString, name: $0) }
         let game: Game = Game(
-            questions: QuestionsBuilder().fetch(), // TODO: - nefunguje to
+            questions: QuestionsBuilder().buildQuestions(),
             players: players
         )
         
