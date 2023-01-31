@@ -6,44 +6,54 @@
 //
 
 import Foundation
+import SwiftUI
+
+struct questionFetched: Codable {
+    
+    let question: String
+    let correctAnswer: String
+    let incorrectAnswers: [String]
+}
 
 final class QuestionsBuilder {
     
-    func buildQuestions() -> [Question] {
+    var questions: [Question] = []
+    var results: [questionFetched] = []
+    
+    func fetch() -> [Question] {
         
-        var questions: [Question] = []
+        guard let url = URL(string: "https://the-trivia-baasdnsjnaw.com/api/questions?limit=20")
+        else {
+            print("invalid url")
+            return []
+        }
         
-        var answer: [Question.Answer] = []
-        answer.append(Question.Answer(id: UUID().uuidString, value: "ahoj", isCorrect: false))
-        answer.append(Question.Answer(id: UUID().uuidString, value: "cau", isCorrect: false))
-        answer.append(Question.Answer(id: UUID().uuidString, value: "ne", isCorrect: true))
-        answer.append(Question.Answer(id: UUID().uuidString, value: "hoj", isCorrect: false))
-
-        questions.append(Question(text: "question1", answers: answer))
-
-        answer.removeAll()
-        answer.append(Question.Answer(id: UUID().uuidString, value: "ne", isCorrect: true))
-        answer.append(Question.Answer(id: UUID().uuidString, value: "ahoj", isCorrect: false))
-        answer.append(Question.Answer(id: UUID().uuidString, value: "cau", isCorrect: false))
-        answer.append(Question.Answer(id: UUID().uuidString, value: "pip", isCorrect: false))
-
-        questions.append(Question(text: "question2", answers: answer))
-
-        answer.removeAll()
-        answer.append(Question.Answer(id: UUID().uuidString, value: "ne", isCorrect: true))
-        answer.append(Question.Answer(id: UUID().uuidString, value: "ahoj", isCorrect: false))
-        answer.append(Question.Answer(id: UUID().uuidString, value: "cau", isCorrect: false))
-        answer.append(Question.Answer(id: UUID().uuidString, value: "pip", isCorrect: false))
-
-        questions.append(Question(text: "question3", answers: answer))
-
-        answer.removeAll()
-        answer.append(Question.Answer(id: UUID().uuidString, value: "ne", isCorrect: true))
-        answer.append(Question.Answer(id: UUID().uuidString, value: "ahoj", isCorrect: false))
-        answer.append(Question.Answer(id: UUID().uuidString, value: "cau", isCorrect: false))
-        answer.append(Question.Answer(id: UUID().uuidString, value: "pip", isCorrect: false))
-
-        questions.append(Question(text: "question4", answers: answer))
+        let request = URLRequest(url: url)
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            
+            if let data = data {
+                if let response = try? JSONDecoder().decode([questionFetched].self, from: data) {
+                    DispatchQueue.main.async {
+                        self.results = response
+                    }
+                    return
+                }
+            }
+        }.resume()
+        
+        var answers: [Question.Answer] = []
+        
+        for result in results {
+            
+            for incorrectAnswer in result.incorrectAnswers {
+                
+                answers.append(Question.Answer(id: UUID().uuidString, value: incorrectAnswer, isCorrect: false))
+            }
+            answers.append(Question.Answer(id: UUID().uuidString, value: result.correctAnswer, isCorrect: true))
+            
+            questions.append(Question(text: result.question, answers: answers))
+        }
         
         return questions
     }

@@ -15,41 +15,33 @@ struct PlayerTabView: View {
     let isCurrentlyPlaying: Bool
     let itemWidth: CGFloat
     let itemHeight: CGFloat
-    let proxy: GeometryProxy
     
     var body: some View {
-        
-        ZStack {
-            
-            RoundedRectangle(cornerRadius: 20)
-//                .offset(x: proxy.frame(in: .local).width, y: 0)
-                .foregroundColor(.red)
          
-            RoundedRectangle(cornerRadius: 10)
-                .frame(width: itemWidth, height: itemHeight)
-                .overlay {
+        RoundedRectangle(cornerRadius: 10)
+            .frame(width: itemWidth, height: itemHeight)
+            .overlay {
+                
+                VStack {
                     
-                    VStack {
-                        
-                        Text(name)
-                            .font(.Shared.playerName)
-                            .foregroundColor(.white)
-                            .animation(.default, value: score)
-                        
-                        Text("\(score)")
-                            .font(.Shared.playerScore)
-                            .foregroundColor(.white)
-                            .animation(.default, value: score)
-                        
-                    }
+                    Text(name)
+                        .font(.Shared.playerName)
+                        .foregroundColor(.white)
+                        .animation(.default, value: score)
+                    
+                    Text("\(score)")
+                        .font(.Shared.playerScore)
+                        .foregroundColor(.white)
+                        .animation(.default, value: score)
+                    
                 }
-                .foregroundColor(.clear)
-                .background {
-                    RoundedRectangle(cornerRadius: 10)
-                        .foregroundColor(.gray)
-                        .matchedGeometryEffect(id: "background", in: namespace, isSource: isCurrentlyPlaying)
-                        .animation(.default, value: isCurrentlyPlaying)
-                }
-        }
+            }
+            .foregroundColor(.clear)
+            .background {
+                RoundedRectangle(cornerRadius: 10)
+                    .foregroundColor(.gray)
+                    .matchedGeometryEffect(id: "background", in: namespace, isSource: isCurrentlyPlaying)
+                    .animation(.default, value: isCurrentlyPlaying)
+            }
     }
 }

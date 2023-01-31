@@ -91,7 +91,7 @@ private extension GameSetupView {
             ForEach(playerNames.indices, id: \.self) { index in
                 
                 let playerName = playerNames[index]
-                
+                    
                 RoundedRectangle(cornerRadius: 10)
                     .frame(height: itemHeight)
                     .overlay {
@@ -136,7 +136,7 @@ private extension GameSetupView {
         
         let players = playerNames.map { Player(id: UUID().uuidString, name: $0) }
         let game: Game = Game(
-            questions: QuestionsBuilder().buildQuestions(),
+            questions: QuestionsBuilder().fetch(), // TODO: - nefunguje to
             players: players
         )
         

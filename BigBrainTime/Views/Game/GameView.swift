@@ -98,18 +98,15 @@ private extension GameView {
                     let player = game.players[index]
                     let isCurrentlyPlaying = currentPlayerIndex == index
                     
-                    GeometryReader { proxy in
                         
-                        PlayerTabView( //TODO: - delete button in the corner
-                            namespace: namespace.self,
-                            name: player.name,
-                            score: player.score,
-                            isCurrentlyPlaying: isCurrentlyPlaying,
-                            itemWidth: itemWidth,
-                            itemHeight: itemHeight,
-                            proxy: proxy
-                        )
-                    }
+                    PlayerTabView(
+                        namespace: namespace.self,
+                        name: player.name,
+                        score: player.score,
+                        isCurrentlyPlaying: isCurrentlyPlaying,
+                        itemWidth: itemWidth,
+                        itemHeight: itemHeight
+                    )
                 }
             }
             .padding()
