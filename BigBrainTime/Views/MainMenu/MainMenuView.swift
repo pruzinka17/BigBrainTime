@@ -34,7 +34,7 @@ struct MainMenuView: View {
             }
             .fullScreenCover(isPresented: $isPresentingGameSetup) {
                 
-                GameSetupView()
+                GameSetupView(categories: CategoriesProvider().provideCategories())
             }
         }
     }

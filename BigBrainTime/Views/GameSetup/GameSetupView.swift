@@ -11,6 +11,8 @@ struct GameSetupView: View {
     
     @Environment(\.dismiss) private var dismissCurrentView
     
+    let categories: [String]
+    
     @FocusState private var inFocus: Bool
     
     @State var isPresentingGame: Bool = false
@@ -19,6 +21,7 @@ struct GameSetupView: View {
     @State var selectedPlayer: String?
     @State var playerNames: [String] = []
     @State private var category = Categories.sport
+    @State var selectedCategories: [String] = []
     
     var body: some View {
         
@@ -33,16 +36,17 @@ struct GameSetupView: View {
                     
                     makeTopBar()
                     
-                    ScrollView {
+                    ScrollView(showsIndicators: false) {
                         
-                        makePlayerSetup(proxy: proxy)
-                        
-                        makeCategoryChooser()
+                        VStack {
+                         
+                            makePlayerSetup(proxy: proxy)
+                            
+                            makeCategoryChooser(proxy: proxy)
+                            
+                            makeStartGame(proxy: proxy)
+                        }
                     }
-                    
-                    Spacer()
-                    
-                    makeBottomBar(proxy: proxy)
                 }
             }
         }
@@ -128,19 +132,47 @@ private extension GameSetupView {
             }
     }
     
-    @ViewBuilder func makeCategoryChooser() -> some View {
+    @ViewBuilder func makeCategoryChooser(proxy: GeometryProxy) -> some View {
         
-//        Picker(selection: $category) {
-//
-//            ForEach(categories, id: \.self) { category in
-//
-//                Text(category)
-//            }
-//        }
-
+        let frame = proxy.frame(in: .local)
+        
+        let columns = [
+            GridItem(.flexible())
+        ]
+        
+        ScrollView(showsIndicators: false) {
+            
+            LazyVGrid(columns: columns) {
+                
+                ForEach(categories, id: \.self) { category in
+                    
+                    let isCategorySelected = isCategorySelected(categoryName: category)
+                    
+                    Button(category.uppercased()) {
+                        
+                        handleCategorySelection(categoryName: category)
+                    }
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .foregroundColor(.white)
+                    .padding()
+                    .background {
+                        
+                        RoundedRectangle(cornerRadius: 20)
+                            .foregroundColor(Color("color-secondary"))
+                            .frame(width: frame.width / 1.2)
+                    }
+                    .opacity(isCategorySelected ? 1 : 0.3)
+                    .frame(width: frame.width / 1.2)
+                    
+                    // TODO: - ten button se da selectnout jen na to napisu
+                }
+            }
+            .padding()
+        }
+        .frame(height: frame.height / 3)
     }
     
-    @ViewBuilder func makeBottomBar(proxy: GeometryProxy) -> some View {
+    @ViewBuilder func makeStartGame(proxy: GeometryProxy) -> some View {
         
         let disabled = playerNames.count < 1
         let buttonWidth = proxy.frame(in: .local).width / 2
@@ -159,6 +191,22 @@ private extension GameSetupView {
 //MARK: - Helper methods
 
 private extension GameSetupView {
+    
+    func handleCategorySelection(categoryName: String) {
+        
+        if isCategorySelected(categoryName: categoryName) {
+            
+            selectedCategories.removeAll(where: { $0 == categoryName } )
+        } else {
+            
+            selectedCategories.append(categoryName)
+        }
+    }
+    
+    func isCategorySelected(categoryName: String) -> Bool {
+        
+        return selectedCategories.contains(categoryName)
+    }
     
     func generateGame() -> Game {
         
@@ -211,6 +259,6 @@ struct GameSetupView_Previews: PreviewProvider {
     
     static var previews: some View {
         
-        GameSetupView()
+        GameSetupView(categories: CategoriesProvider().provideCategories())
     }
 }

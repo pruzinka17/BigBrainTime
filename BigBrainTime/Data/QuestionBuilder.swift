@@ -29,7 +29,7 @@ final class QuestionsBuilder {
         let questions: [Question] = [
             Question(text: "question1", answers: test),
             Question(text: "question2", answers: test),
-            Question(text: "question4", answers: test),
+            Question(text: "question3", answers: test),
             Question(text: "question4", answers: test)
         ]
         
