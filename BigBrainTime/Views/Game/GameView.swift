@@ -24,7 +24,7 @@ struct GameView: View {
         
         ZStack {
             
-            Color("color-background")
+            Color.Shared.background
                 .ignoresSafeArea()
             
             GeometryReader { proxy in
@@ -66,7 +66,7 @@ private extension GameView {
         
         ZStack {
             
-            Color("color-background2")
+            Color.Shared.background2
                 .ignoresSafeArea()
                 .shadow(radius: 6)
             
@@ -78,7 +78,7 @@ private extension GameView {
                 } label: {
                     
                     Label("", systemImage: "return")
-                        .foregroundColor(Color("color-secondary"))
+                        .foregroundColor(Color.Shared.secondary)
                         .fontWeight(.bold)
                 }
                 .padding(.leading)
@@ -86,7 +86,7 @@ private extension GameView {
                 Spacer()
                 
                 Text("question: \(currentQuestionIndex + 1) / \(game.questions.count)")
-                    .foregroundColor(Color("color-secondary"))
+                    .foregroundColor(Color.Shared.secondary)
                     .padding(.trailing)
                     .fontWeight(.bold)
             }
@@ -166,7 +166,7 @@ private extension GameView {
                             .background(content: {
                                 
                                 RoundedRectangle(cornerRadius: 10)
-                                    .foregroundColor(Color("color-secondary"))
+                                    .foregroundColor(Color.Shared.secondary)
                             })
                             .onTapGesture {
                                 
@@ -186,7 +186,7 @@ private extension GameView {
         
         ZStack {
             
-            Color("color-background")
+            Color.Shared.background
                 .ignoresSafeArea()
             
             VStack {
@@ -224,7 +224,7 @@ private extension GameView {
                                 .fontWeight(.bold)
                                 .foregroundColor(.white)
                         }
-                        .listRowBackground(Color("color-background"))
+                        .listRowBackground(Color.Shared.background)
                     }
                 }
                 .listStyle(.plain)

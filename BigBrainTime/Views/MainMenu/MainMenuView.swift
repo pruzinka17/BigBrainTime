@@ -17,7 +17,7 @@ struct MainMenuView: View {
             
             ZStack {
                 
-                Color("color-background")
+                Color.Shared.background
                     .ignoresSafeArea()
                     
                     VStack {
@@ -51,11 +51,11 @@ private extension MainMenuView {
         HStack {
             
             Rectangle()
-                .foregroundColor(Color("color-secondary"))
+                .foregroundColor(Color.Shared.secondary)
                 .frame(width: frame.width / 5, height: frame.height / 4)
                     
             Text(Constants.logoText)
-                .foregroundColor(Color("color-title"))
+                .foregroundColor(Color.Shared.title)
                 .font(.Shared.logo)
         }
     }

@@ -24,13 +24,13 @@ struct PlayerBubbleView: View {
             VStack {
                 
                 Circle()
-                    .foregroundColor(Color("color-playerbubble"))
+                    .foregroundColor(Color.Shared.playerBubble)
                     .background(content: {
                         
                         if highlited {
                             
                             Circle()
-                                .foregroundColor(Color("color-secondary"))
+                                .foregroundColor(Color.Shared.secondary)
                                 .scaleEffect(1.15)
                         }
                     })
@@ -70,13 +70,3 @@ struct PlayerBubbleView: View {
         }
     }
 }
-
-//struct PlayerBubbleView_Previews: PreviewProvider {
-//
-//    static var previews: some View {
-//
-//        PlayerBubbleView(name: "mirek", score: 100, highlited: false, canBeDeleted: true, proxy: Geo) {
-//
-//        }
-//    }
-//}

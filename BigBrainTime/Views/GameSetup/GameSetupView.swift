@@ -29,7 +29,7 @@ struct GameSetupView: View {
         
         ZStack {
             
-            Color("color-background")
+            Color.Shared.background
                 .ignoresSafeArea()
             
             GeometryReader { proxy in
@@ -45,7 +45,6 @@ struct GameSetupView: View {
                         makeCategoryChooser(proxy: proxy)
                         
                         makeDifficulties()
-                        
                     }
                     
                     Spacer()
@@ -75,7 +74,7 @@ private extension GameSetupView {
         
         ZStack {
             
-            Color("color-background2")
+            Color.Shared.background2
                 .ignoresSafeArea()
                 .shadow(radius: 6)
             
@@ -87,7 +86,7 @@ private extension GameSetupView {
                 } label: {
                     
                     Label("", systemImage: "return")
-                        .foregroundColor(Color("color-secondary"))
+                        .foregroundColor(Color.Shared.secondary)
                         .fontWeight(.bold)
                 }
                 .padding(.leading)
@@ -106,7 +105,7 @@ private extension GameSetupView {
             
             HStack {
                 
-                Text("players:")
+                Text(Constants.Sections.players)
                     .font(.Shared.segmentTitle)
                     .padding(.leading)
                     .foregroundColor(.white)
@@ -118,7 +117,7 @@ private extension GameSetupView {
                 
                 case true:
                     
-                    Text("no players")
+                Text(Constants.placeholderNoPlayers)
                         .font(.system(size: 48, weight: .bold, design: .rounded))
                         .opacity(0.3)
                         .padding()
@@ -152,7 +151,7 @@ private extension GameSetupView {
                     .frame(height: frame.height / 6)
             }
 
-            TextField("add player", text: $playerName)
+            TextField(Constants.placeholderNoPlayers, text: $playerName)
                 .textFieldStyle(AddPlayerTextFieldStyle(proxy: proxy))
                 .focused($inFocus)
                 .onSubmit {
@@ -171,7 +170,7 @@ private extension GameSetupView {
             
             HStack {
                 
-                Text("categories:")
+                Text(Constants.Sections.catgories)
                     .font(.Shared.segmentTitle)
                     .padding(.leading)
                     .foregroundColor(.white)
@@ -196,7 +195,7 @@ private extension GameSetupView {
                         .background {
                             
                             RoundedRectangle(cornerRadius: 20)
-                                .foregroundColor(Color("color-secondary"))
+                                .foregroundColor(Color.Shared.secondary)
                         }
                         .foregroundColor(.white)
                         .opacity(isSelected ? 1 : 0.3)
@@ -213,7 +212,7 @@ private extension GameSetupView {
             
             HStack {
                 
-                Text("difficulty:")
+                Text(Constants.Sections.difficulty)
                     .font(.Shared.segmentTitle)
                     .padding(.leading)
                     .foregroundColor(.white)
@@ -300,9 +299,18 @@ private extension GameSetupView {
     enum Constants {
         
         static let startGameButtonTitle: String = "Start Game"
+        static let placeholderNoPlayers: String = "no players"
+        static let placeholderTextField: String = "add player"
         
         static let spacingDivider: CGFloat = 40
         static let itemSizeDivider: CGFloat = 14
+        
+        enum Sections {
+            
+            static let players: String = "Players:"
+            static let catgories: String = "Categories:"
+            static let difficulty: String = "Difficulty:"
+        }
     }
 }
 

@@ -20,7 +20,7 @@ struct MainButtonStyle: ButtonStyle {
             .padding()
             .background {
                 RoundedRectangle(cornerRadius: 20)
-                    .foregroundColor(Color("color-secondary"))
+                    .foregroundColor(Color.Shared.secondary)
             }
     }
 }

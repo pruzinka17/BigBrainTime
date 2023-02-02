@@ -11,6 +11,7 @@
 		F74324C42981635B00C61C25 /* MainButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74324C32981635B00C61C25 /* MainButtonStyle.swift */; };
 		F74324C72981639F00C61C25 /* MainMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74324C62981639F00C61C25 /* MainMenuView.swift */; };
 		F7802EAA2981811100B8B2D8 /* GameSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7802EA92981811100B8B2D8 /* GameSetupView.swift */; };
+		F78B0246298C0B930002BA56 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78B0245298C0B930002BA56 /* Colors.swift */; };
 		F79359A4298113AA00F5EFDD /* BigBrainTimeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79359A3298113AA00F5EFDD /* BigBrainTimeApp.swift */; };
 		F79359A6298113AA00F5EFDD /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79359A5298113AA00F5EFDD /* ContentView.swift */; };
 		F79359A8298113AB00F5EFDD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F79359A7298113AB00F5EFDD /* Assets.xcassets */; };
@@ -28,6 +29,7 @@
 		F74324C32981635B00C61C25 /* MainButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainButtonStyle.swift; sourceTree = "<group>"; };
 		F74324C62981639F00C61C25 /* MainMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuView.swift; sourceTree = "<group>"; };
 		F7802EA92981811100B8B2D8 /* GameSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSetupView.swift; sourceTree = "<group>"; };
+		F78B0245298C0B930002BA56 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		F79359A0298113AA00F5EFDD /* BigBrainTime.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BigBrainTime.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F79359A3298113AA00F5EFDD /* BigBrainTimeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BigBrainTimeApp.swift; sourceTree = "<group>"; };
 		F79359A5298113AA00F5EFDD /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -137,6 +139,7 @@
 		F79359B2298117BE00F5EFDD /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				F78B0245298C0B930002BA56 /* Colors.swift */,
 				F79359B52981182200F5EFDD /* Fonts.swift */,
 				F74324C22981631800C61C25 /* ButtonStyles */,
 				F7AE029429840F67000F4643 /* TextFieldStyles */,
@@ -271,6 +274,7 @@
 				F79359A6298113AA00F5EFDD /* ContentView.swift in Sources */,
 				F7AE029629840F82000F4643 /* AddPlayerTextFieldStyle.swift in Sources */,
 				F7A5485F2982B6A400BBDC89 /* GameView.swift in Sources */,
+				F78B0246298C0B930002BA56 /* Colors.swift in Sources */,
 				F79359A4298113AA00F5EFDD /* BigBrainTimeApp.swift in Sources */,
 				F7802EAA2981811100B8B2D8 /* GameSetupView.swift in Sources */,
 				F74324C42981635B00C61C25 /* MainButtonStyle.swift in Sources */,
