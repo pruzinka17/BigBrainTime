@@ -23,6 +23,9 @@ struct GameSetupView: View {
     @State private var category = Categories.sport
     @State var selectedCategories: [String] = []
     
+    @State private var diffiecuties: [String] = ["easy", "medium", "hard"]
+    @State private var selectedDifficulty: String = "medium"
+    
     var body: some View {
         
         ZStack {
@@ -43,6 +46,8 @@ struct GameSetupView: View {
                             makePlayerSetup(proxy: proxy)
                             
                             makeCategoryChooser(proxy: proxy)
+                            
+                            makeDifficulties()
                             
                             makeStartGame(proxy: proxy)
                         }
@@ -83,93 +88,134 @@ private extension GameSetupView {
             
             Spacer()
         }
+        .padding(.bottom)
     }
     
     @ViewBuilder func makePlayerSetup(proxy: GeometryProxy) -> some View {
         
-        let columns = [
-            GridItem(.flexible()),
-            GridItem(.flexible()),
-            GridItem(.flexible()),
-            GridItem(.flexible())
-        ]
-        
         let frame = proxy.frame(in: .local)
-        let spacing = frame.width / Constants.spacingDivider
         
-        switch playerNames.isEmpty {
+        VStack {
             
-            case true:
-            
-                Text("no players")
-                    .font(.system(size: 54, weight: .bold, design: .rounded))
-                    .opacity(0.3)
-                    .padding()
-            
-            case false:
-            
-                LazyVGrid(columns: columns, spacing: spacing) {
-                    
-                    ForEach(playerNames.indices, id: \.self) { index in
-                        
-                        let name = playerNames[index]
-                            
-                        PlayerBubbleView(name: name)
-                            .padding(5)
-                    }
-                }
-                .padding()
-                .animation(.default, value: playerNames)
-        }
-
-        TextField("add player", text: $playerName)
-            .textFieldStyle(AddPlayerTextFieldStyle(proxy: proxy))
-            .focused($inFocus)
-            .onSubmit {
+            HStack {
                 
-                inFocus = true
-                addPlayer()
+                Text("players:")
+                    .font(.Shared.playerName)
+                    .padding(.leading)
+                    .foregroundColor(.white)
+                
+                Spacer()
             }
+            
+            switch playerNames.isEmpty {
+                
+                case true:
+                    
+                    Text("no players")
+                        .font(.system(size: 54, weight: .bold, design: .rounded))
+                        .opacity(0.3)
+                        .padding()
+                    
+                case false:
+                
+                    ScrollView(.horizontal) {
+                        
+                        HStack {
+                            
+                            ForEach(playerNames.indices, id: \.self) { index in
+                                
+                                let name = playerNames[index]
+                                
+                                PlayerBubbleView(
+                                    name: name,
+                                    score: nil,
+                                    highlited: false
+                                )
+                            }
+                        }
+                        .padding()
+                        .animation(.default, value: playerNames)
+                    }
+                    .frame(height: frame.height / 6)
+            }
+
+            TextField("add player", text: $playerName)
+                .textFieldStyle(AddPlayerTextFieldStyle(proxy: proxy))
+                .focused($inFocus)
+                .onSubmit {
+                    
+                    inFocus = true
+                    addPlayer()
+                }
+        }
     }
     
     @ViewBuilder func makeCategoryChooser(proxy: GeometryProxy) -> some View {
         
-        let frame = proxy.frame(in: .local)
-        
-        let columns = [
-            GridItem(.flexible())
-        ]
-        
-        ScrollView(showsIndicators: false) {
+        VStack {
             
-            LazyVGrid(columns: columns) {
+            HStack {
                 
-                ForEach(categories, id: \.self) { category in
-                    
-                    let isCategorySelected = isCategorySelected(categoryName: category)
-                    
-                    Button(category.uppercased()) {
-                        
-                        handleCategorySelection(categoryName: category)
-                    }
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                Text("categories:")
+                    .font(.Shared.playerName)
+                    .padding(.leading)
                     .foregroundColor(.white)
-                    .padding()
-                    .background {
-                        
-                        RoundedRectangle(cornerRadius: 20)
-                            .foregroundColor(Color("color-secondary"))
-                            .frame(width: frame.width / 1.2)
-                    }
-                    .opacity(isCategorySelected ? 1 : 0.3)
-                    .frame(width: frame.width / 1.2)
+                
+                Spacer()
+            }
+            
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                
+                HStack {
                     
-                    // TODO: - ten button se da selectnout jen na to napisu
+                    ForEach(categories, id: \.self) { category in
+                        
+                        let isSelected = isCategorySelected(categoryName: category)
+                        
+                        Button(category) {
+                            
+                            handleCategorySelection(categoryName: category)
+                        }
+                        .padding()
+                        .background {
+                            
+                            RoundedRectangle(cornerRadius: 20)
+                                .foregroundColor(Color("color-secondary"))
+                        }
+                        .foregroundColor(.white)
+                        .opacity(isSelected ? 1 : 0.3)
+                    }
+                }
+                .padding()
+            }
+        }
+    }
+    
+    @ViewBuilder func makeDifficulties() -> some View {
+        
+        VStack {
+            
+            HStack {
+                
+                Text("difficulty:")
+                    .font(.Shared.playerName)
+                    .padding(.leading)
+                    .foregroundColor(.white)
+                
+                Spacer()
+            }
+            
+            Picker("pick a difficulty", selection: $selectedDifficulty) {
+                
+                ForEach(diffiecuties, id: \.self) { difficulty in
+                    
+                    Text(difficulty)
                 }
             }
+            .pickerStyle(.segmented)
             .padding()
         }
-        .frame(height: frame.height / 3)
     }
     
     @ViewBuilder func makeStartGame(proxy: GeometryProxy) -> some View {
@@ -185,6 +231,7 @@ private extension GameSetupView {
         .disabled(disabled)
         .opacity(disabled ? 0.3 : 1)
         .animation(.default, value: disabled)
+        .padding()
     }
 }
 

@@ -84,30 +84,34 @@ private extension GameView {
     @ViewBuilder func makePlayerList(proxy: GeometryProxy) -> some View {
         
         let frame = proxy.frame(in: .local)
-        let itemHeight = frame.height / 8.5
-        let itemWidth = frame.width / 5
         
         ScrollView(.horizontal, showsIndicators: false) {
             
-            HStack {
+            HStack(alignment: .center) {
+                
+                Spacer()
                 
                 ForEach(game.players.indices, id: \.self) { index in
 
                     let player = game.players[index]
                     let isCurrentlyPlaying = currentPlayerIndex == index
                     
-                    PlayerBubbleView(name: player.name)
-                        .frame(width: itemWidth, height: itemHeight)
-                        .animation(.default, value: isCurrentlyPlaying)
+                    PlayerBubbleView(
+                        name: player.name,
+                        score: player.score,
+                        highlited: isCurrentlyPlaying
+                    )
+                    .frame(height: frame.height / 7.5)
+                    .animation(.default, value: isCurrentlyPlaying)
                 }
             }
+            .frame(height: frame.height / 7)
         }
     }
     
     @ViewBuilder func makeQuestion() -> some View {
         
         let columns = [
-            GridItem(.flexible()),
             GridItem(.flexible())
         ]
         
@@ -115,10 +119,15 @@ private extension GameView {
         
         VStack {
             
-            Text(currentQuestion.text)
+            Text("category")
                 .font(.Shared.answerTitle)
                 .padding()
                 .animation(.default, value: currentQuestion.text)
+            
+            Divider()
+            
+            Text(currentQuestion.text)
+                .font(.Shared.answer)
             
             LazyVGrid(columns: columns) {
                 
@@ -135,7 +144,7 @@ private extension GameView {
                         .background(content: {
                             
                             RoundedRectangle(cornerRadius: 10)
-                                .foregroundColor(.gray)
+                                .foregroundColor(Color("color-secondary"))
                         })
                         .onTapGesture {
                             
