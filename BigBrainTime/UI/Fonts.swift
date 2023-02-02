@@ -19,7 +19,10 @@ extension Font {
         static let playerScore = Font.system(size: 13, weight: .bold, design: .rounded)
         static let playerBubbleFont = Font.system(size: 23, weight: .bold, design: .rounded)
         
-        static let answer = Font.system(size: 23, weight: .thin, design: .rounded)
+        static let segmentTitle = Font.system(size: 16, weight: .bold, design: .rounded)
+        
+        static let question = Font.system(size: 23, weight: .thin, design: .rounded)
+        static let answer = Font.system(size: 23, weight: .semibold, design: .rounded)
         static let answerTitle = Font.system(size: 48, weight: .bold, design: .rounded)
     }
 }

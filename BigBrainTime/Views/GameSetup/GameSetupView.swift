@@ -20,7 +20,6 @@ struct GameSetupView: View {
     @State var playerName: String = ""
     @State var selectedPlayer: String?
     @State var playerNames: [String] = []
-    @State private var category = Categories.sport
     @State var selectedCategories: [String] = []
     
     @State private var diffiecuties: [String] = ["easy", "medium", "hard"]
@@ -37,27 +36,28 @@ struct GameSetupView: View {
                 
                 VStack {
                     
-                    makeTopBar()
-                    
+                    makeTopBar(proxy: proxy)
+                        
                     ScrollView(showsIndicators: false) {
                         
-                        VStack {
-                         
-                            makePlayerSetup(proxy: proxy)
-                            
-                            makeCategoryChooser(proxy: proxy)
-                            
-                            makeDifficulties()
-                            
-                            makeStartGame(proxy: proxy)
-                        }
+                        makePlayerSetup(proxy: proxy)
+                        
+                        makeCategoryChooser(proxy: proxy)
+                        
+                        makeDifficulties()
+                        
                     }
+                    
+                    Spacer()
+                    
+                    makeStartGame(proxy: proxy)
                 }
             }
         }
         .onAppear {
             
             inFocus = true
+            selectedCategories.append(categories[0])
         }
         .ignoresSafeArea(.keyboard)
         .fullScreenCover(isPresented: $isPresentingGame) {
@@ -71,24 +71,31 @@ struct GameSetupView: View {
 
 private extension GameSetupView {
     
-    @ViewBuilder func makeTopBar() -> some View {
+    @ViewBuilder func makeTopBar(proxy: GeometryProxy) -> some View {
         
-        HStack {
+        ZStack {
             
-            Button {
+            Color("color-background2")
+                .ignoresSafeArea()
+                .shadow(radius: 6)
+            
+            HStack {
                 
-                dismissCurrentView()
-            } label: {
+                Button {
+                    
+                    dismissCurrentView()
+                } label: {
+                    
+                    Label("", systemImage: "return")
+                        .foregroundColor(Color("color-secondary"))
+                        .fontWeight(.bold)
+                }
+                .padding(.leading)
                 
-                Label("", systemImage: "return")
-                    .foregroundColor(Color("color-secondary"))
-                    .fontWeight(.bold)
+                Spacer()
             }
-            .padding(.leading)
-            
-            Spacer()
         }
-        .padding(.bottom)
+        .frame(height: proxy.safeAreaInsets.top)
     }
     
     @ViewBuilder func makePlayerSetup(proxy: GeometryProxy) -> some View {
@@ -100,7 +107,7 @@ private extension GameSetupView {
             HStack {
                 
                 Text("players:")
-                    .font(.Shared.playerName)
+                    .font(.Shared.segmentTitle)
                     .padding(.leading)
                     .foregroundColor(.white)
                 
@@ -112,9 +119,10 @@ private extension GameSetupView {
                 case true:
                     
                     Text("no players")
-                        .font(.system(size: 54, weight: .bold, design: .rounded))
+                        .font(.system(size: 48, weight: .bold, design: .rounded))
                         .opacity(0.3)
                         .padding()
+                        .frame(height: frame.height / 6)
                     
                 case false:
                 
@@ -129,7 +137,12 @@ private extension GameSetupView {
                                 PlayerBubbleView(
                                     name: name,
                                     score: nil,
-                                    highlited: false
+                                    highlited: false,
+                                    canBeDeleted: true,
+                                    onTap: {
+                                        
+                                        removePlayer(name: name)
+                                    }
                                 )
                             }
                         }
@@ -145,7 +158,9 @@ private extension GameSetupView {
                 .onSubmit {
                     
                     inFocus = true
-                    addPlayer()
+                    if !playerName.isEmpty {
+                        addPlayer()
+                    }
                 }
         }
     }
@@ -157,7 +172,7 @@ private extension GameSetupView {
             HStack {
                 
                 Text("categories:")
-                    .font(.Shared.playerName)
+                    .font(.Shared.segmentTitle)
                     .padding(.leading)
                     .foregroundColor(.white)
                 
@@ -199,14 +214,14 @@ private extension GameSetupView {
             HStack {
                 
                 Text("difficulty:")
-                    .font(.Shared.playerName)
+                    .font(.Shared.segmentTitle)
                     .padding(.leading)
                     .foregroundColor(.white)
                 
                 Spacer()
             }
             
-            Picker("pick a difficulty", selection: $selectedDifficulty) {
+            Picker("", selection: $selectedDifficulty) {
                 
                 ForEach(diffiecuties, id: \.self) { difficulty in
                     
@@ -220,7 +235,7 @@ private extension GameSetupView {
     
     @ViewBuilder func makeStartGame(proxy: GeometryProxy) -> some View {
         
-        let disabled = playerNames.count < 1
+        let disabled = playerNames.count < 1 || selectedCategories.isEmpty
         let buttonWidth = proxy.frame(in: .local).width / 2
         
         Button(Constants.startGameButtonTitle) {
@@ -281,15 +296,6 @@ private extension GameSetupView {
 //MARK: - Constants
 
 private extension GameSetupView {
-    
-    enum Categories: String, CaseIterable, Identifiable {
-        
-        case sport
-        case science
-        case general
-        
-        var id: String { self.rawValue }
-    }
     
     enum Constants {
         

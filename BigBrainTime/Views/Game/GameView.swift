@@ -31,7 +31,7 @@ struct GameView: View {
                 
                 VStack {
                     
-                    makeTopBar()
+                    makeTopBar(proxy: proxy)
                     
                     makeQuestion()
                     
@@ -62,23 +62,36 @@ struct GameView: View {
 
 private extension GameView {
     
-    @ViewBuilder func makeTopBar() -> some View {
+    @ViewBuilder func makeTopBar(proxy: GeometryProxy) -> some View {
         
-        HStack {
+        ZStack {
             
-            Button {
+            Color("color-background2")
+                .ignoresSafeArea()
+                .shadow(radius: 6)
+            
+            HStack {
                 
-                dismissCurrentView()
-            } label: {
+                Button {
+                    
+                    dismissCurrentView()
+                } label: {
+                    
+                    Label("", systemImage: "return")
+                        .foregroundColor(Color("color-secondary"))
+                        .fontWeight(.bold)
+                }
+                .padding(.leading)
                 
-                Label("", systemImage: "return")
-                    .foregroundColor(.black)
+                Spacer()
+                
+                Text("question: \(currentQuestionIndex + 1) / \(game.questions.count)")
+                    .foregroundColor(Color("color-secondary"))
+                    .padding(.trailing)
                     .fontWeight(.bold)
             }
-            .padding(.leading)
-            
-            Spacer()
         }
+        .frame(height: proxy.safeAreaInsets.top)
     }
     
     @ViewBuilder func makePlayerList(proxy: GeometryProxy) -> some View {
@@ -95,14 +108,18 @@ private extension GameView {
 
                     let player = game.players[index]
                     let isCurrentlyPlaying = currentPlayerIndex == index
-                    
-                    PlayerBubbleView(
-                        name: player.name,
-                        score: player.score,
-                        highlited: isCurrentlyPlaying
-                    )
-                    .frame(height: frame.height / 7.5)
-                    .animation(.default, value: isCurrentlyPlaying)
+                        
+                        PlayerBubbleView(
+                            name: player.name,
+                            score: player.score,
+                            highlited: isCurrentlyPlaying,
+                            canBeDeleted: false,
+                            onTap: {
+                                
+                            }
+                        )
+                        .frame(height: frame.height / 7.5)
+                        .animation(.default, value: isCurrentlyPlaying)
                 }
             }
             .frame(height: frame.height / 7)
@@ -117,44 +134,50 @@ private extension GameView {
         
         let currentQuestion = game.questions[currentQuestionIndex]
         
-        VStack {
+        ScrollView {
             
-            Text("category")
-                .font(.Shared.answerTitle)
-                .padding()
-                .animation(.default, value: currentQuestion.text)
-            
-            Divider()
-            
-            Text(currentQuestion.text)
-                .font(.Shared.answer)
-            
-            LazyVGrid(columns: columns) {
+            VStack {
                 
-                ForEach(currentQuestion.answers) { answer in
+                Text(currentQuestion.category)
+                    .font(.Shared.answerTitle)
+                    .foregroundColor(.white)
+                    .animation(.default, value: currentQuestion.category)
+                    .padding(.bottom)
+                
+                Text(currentQuestion.text)
+                    .font(.Shared.question)
+                    .foregroundColor(.white)
+                    .animation(.default, value: currentQuestion.text)
+                    .padding(.bottom)
+                
+                LazyVGrid(columns: columns) {
                     
-                    RoundedRectangle(cornerRadius: 10)
-                        .foregroundColor(.clear)
-                        .frame(height: 55)
-                        .overlay {
-                            
-                            Text(answer.value)
-                                .font(.Shared.answer)
-                        }
-                        .background(content: {
-                            
-                            RoundedRectangle(cornerRadius: 10)
-                                .foregroundColor(Color("color-secondary"))
-                        })
-                        .onTapGesture {
-                            
-                            handleAnswer(for: answer)
-                        }
-                        .animation(.default, value: answer.value)
+                    ForEach(currentQuestion.answers) { answer in
+                        
+                        RoundedRectangle(cornerRadius: 10)
+                            .foregroundColor(.clear)
+                            .frame(height: 55)
+                            .overlay {
+                                
+                                Text(answer.value)
+                                    .font(.Shared.answer)
+                                    .foregroundColor(.white)
+                            }
+                            .background(content: {
+                                
+                                RoundedRectangle(cornerRadius: 10)
+                                    .foregroundColor(Color("color-secondary"))
+                            })
+                            .onTapGesture {
+                                
+                                handleAnswer(for: answer)
+                            }
+                            .animation(.default, value: answer.value)
+                    }
                 }
             }
+            .padding()
         }
-        .padding()
     }
     
     @ViewBuilder func makeGameEnd() -> some View {
@@ -163,7 +186,7 @@ private extension GameView {
         
         ZStack {
             
-            Color.gray
+            Color("color-background")
                 .ignoresSafeArea()
             
             VStack {
@@ -193,13 +216,15 @@ private extension GameView {
                         HStack {
                             Text(playerScore.name)
                                 .fontWeight(.bold)
+                                .foregroundColor(.white)
                             
                             Spacer()
                             
                             Text("\(playerScore.score)")
                                 .fontWeight(.bold)
+                                .foregroundColor(.white)
                         }
-                        .listRowBackground(Color.gray)
+                        .listRowBackground(Color("color-background"))
                     }
                 }
                 .listStyle(.plain)

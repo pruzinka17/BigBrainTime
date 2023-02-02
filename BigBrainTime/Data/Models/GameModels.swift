@@ -37,6 +37,7 @@ final class Player: Identifiable {
 struct Question {
     
     let text: String
+    let category: String
     
     let answers: [Answer]
     
