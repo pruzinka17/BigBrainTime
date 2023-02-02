@@ -19,7 +19,7 @@ struct PlayerBubbleView: View {
     
     var body: some View {
          
-//        ZStack {
+        ZStack(alignment: .topTrailing) {
             
             VStack {
                 
@@ -51,17 +51,23 @@ struct PlayerBubbleView: View {
                 }
             }
             
-//            if canBeDeleted {
-//
-//                Circle()
-//                    .offset(x: 33, y: -33)
-//                    .frame(width: 20, height: 20)
-//                    .onTapGesture {
-//
-//                        onTap()
-//                    }
-//            }
-//        }
+            if canBeDeleted {
+                
+                Circle()
+                    .foregroundColor(.white)
+                    .frame(width: 20, height: 20)
+                    .overlay(content: {
+                        
+                        Text("-")
+                            .fontWeight(.bold)
+                            .foregroundColor(.red)
+                    })
+                    .onTapGesture {
+                        
+                        onTap()
+                    }
+            }
+        }
     }
 }
 
