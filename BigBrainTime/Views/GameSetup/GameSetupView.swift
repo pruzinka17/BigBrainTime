@@ -27,6 +27,8 @@ struct GameSetupView: View {
     @State var categories: [Category] = []
     @State var selectedCategories: [String] = []
     
+    @State private var isFetchingCategories: Bool = true
+    
     // MARK: - Questions
     
     @State var numberOfQuestions: Double = 2
@@ -74,6 +76,7 @@ struct GameSetupView: View {
         .task {
             
             let categories = await gameService.fetchCateogires()
+            isFetchingCategories = false
             self.categories = categories
         }
         .onAppear {
@@ -213,31 +216,43 @@ private extension GameSetupView {
                 Spacer()
             }
             
-            ScrollView(.horizontal, showsIndicators: false) {
+            if !isFetchingCategories {
+                
+                ScrollView(.horizontal, showsIndicators: false) {
+                    
+                    HStack {
+                    
+                        ForEach(categories, id: \.name) { category in
+                            
+                            let isSelected = isCategorySelected(category.value)
+                            
+                            Button(category.name) {
+                                
+                                handleCategorySelection(category.value)
+                            }
+                            .padding()
+                            .background {
+                                
+                                RoundedRectangle(cornerRadius: 20)
+                                    .foregroundColor(Color.Shared.secondary)
+                            }
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                            .opacity(isSelected ? 1 : 0.3)
+                        }
+                    }
+                    .padding()
+                }
+            } else {
                 
                 HStack {
                     
-                    ForEach(categories, id: \.name) { category in
-                        
-                        let isSelected = isCategorySelected(category.value)
-                        
-                        Button(category.name) {
-                            
-                            handleCategorySelection(category.value)
-                        }
-                        .padding()
-                        .background {
-                            
-                            RoundedRectangle(cornerRadius: 20)
-                                .foregroundColor(Color.Shared.secondary)
-                        }
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .opacity(isSelected ? 1 : 0.3)
-                    }
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: Color.Shared.secondary))
                 }
-                .padding()
             }
+            
+
         }
     }
 }
@@ -400,14 +415,18 @@ private extension GameSetupView {
     }
     
     func generateGame() -> Game {
-        
+
         let players = playerNames.map { Player(id: UUID().uuidString, name: $0) }
-        
+
         let game: Game = Game(
-            questions: QuestionsBuilder().buildQuestions(),
+            questions: [
+                Question(text: "bla", category: "asd", answers: [
+                    Question.Answer(id: UUID().uuidString, value: "balls", isCorrect: false)
+                ])
+            ],
             players: players
         )
-        
+
         return game
     }
 }

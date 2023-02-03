@@ -347,19 +347,19 @@ private extension GameView {
 
 // MARK: - Preview
 
-struct GameView_Previews: PreviewProvider {
-    
-    static var previews: some View {
-        
-        GameView(game: Game(
-            questions: QuestionsBuilder().buildQuestions(),
-            players: [
-                Player(id: UUID().uuidString, name: "mirek"),
-                Player(id: UUID().uuidString, name: "ahoj"),
-                Player(id: UUID().uuidString, name: "ne"),
-                Player(id: UUID().uuidString, name: "prosim")
-                ]
-            )
-        )
-    }
-}
+//struct GameView_Previews: PreviewProvider {
+//
+//    static var previews: some View {
+//
+//        GameView(game: Game(
+//            questions: QuestionsBuilder().buildQuestions(),
+//            players: [
+//                Player(id: UUID().uuidString, name: "mirek"),
+//                Player(id: UUID().uuidString, name: "ahoj"),
+//                Player(id: UUID().uuidString, name: "ne"),
+//                Player(id: UUID().uuidString, name: "prosim")
+//                ]
+//            )
+//        )
+//    }
+//}

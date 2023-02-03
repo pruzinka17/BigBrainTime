@@ -25,10 +25,11 @@ final class GameService {
             
             var categories: [Category] = []
             
-            for value in response.artsAndLiterarature {
+            
+            for value in provideAllCategories(dto: response) {
                 
                 let category = Category(
-                    name: value.capitalized,
+                    name: value.capitalized.replacingOccurrences(of: "_", with: " "),
                     value: value
                 )
                 
@@ -50,5 +51,23 @@ final class GameService {
     ) async -> [Question] {
         
         return []
+    }
+    
+    func provideAllCategories(dto: CategoriesDTO) -> [String] {
+            
+        var allCategories: [String] = []
+            
+        allCategories.append(contentsOf: dto.artsAndLiterarature)
+        allCategories.append(contentsOf: dto.filmAndTv)
+        allCategories.append(contentsOf: dto.foodAndDrink)
+        allCategories.append(contentsOf: dto.generalKnowledge)
+        allCategories.append(contentsOf: dto.geography)
+        allCategories.append(contentsOf: dto.history)
+        allCategories.append(contentsOf: dto.music)
+        allCategories.append(contentsOf: dto.science)
+        allCategories.append(contentsOf: dto.societyAndCulture)
+        allCategories.append(contentsOf: dto.sportAndLeisure)
+            
+        return allCategories
     }
 }
