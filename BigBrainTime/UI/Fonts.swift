@@ -18,6 +18,7 @@ extension Font {
         static let playerName = Font.system(size: 14, weight: .thin, design: .rounded)
         static let playerScore = Font.system(size: 13, weight: .bold, design: .rounded)
         static let playerBubbleFont = Font.system(size: 23, weight: .bold, design: .rounded)
+        static let noPlayers = Font.system(size: 48, weight: .bold, design: .rounded)
         
         static let segmentTitle = Font.system(size: 16, weight: .bold, design: .rounded)
         

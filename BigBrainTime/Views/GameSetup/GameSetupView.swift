@@ -15,6 +15,8 @@ struct GameSetupView: View {
     
     @FocusState private var inFocus: Bool
     
+    @Namespace var namespace
+    
     @State var isPresentingGame: Bool = false
     
     @State var playerName: String = ""
@@ -22,8 +24,7 @@ struct GameSetupView: View {
     @State var playerNames: [String] = []
     @State var selectedCategories: [String] = []
     
-    @State private var diffiecuties: [String] = ["easy", "medium", "hard"]
-    @State private var selectedDifficulty: String = "medium"
+    @State private var selectedDifficulty: Constants.Difficulties = Constants.Difficulties.Medium
     
     @State var numberOfQuestions: Double = 2
     
@@ -46,10 +47,11 @@ struct GameSetupView: View {
                         
                         makeCategories(proxy: proxy)
                         
-                        makeQuestionCount()
+//                        makeQuestionCount()
                         
                         makeDifficulties()
                     }
+                    .padding(.top)
                     
                     Spacer()
                     
@@ -122,40 +124,40 @@ private extension GameSetupView {
                 case true:
                     
                 Text(Constants.placeholderNoPlayers)
-                        .font(.system(size: 48, weight: .bold, design: .rounded))
-                        .opacity(0.3)
-                        .padding()
-                        .frame(height: frame.height / 6)
+                    .font(.Shared.noPlayers)
+                    .opacity(0.3)
+                    .padding()
+                    .frame(height: frame.height / Constants.playersFrameDivider)
                     
                 case false:
                 
-                    ScrollView(.horizontal) {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    
+                    HStack {
                         
-                        HStack {
+                        ForEach(playerNames.indices, id: \.self) { index in
                             
-                            ForEach(playerNames.indices, id: \.self) { index in
-                                
-                                let name = playerNames[index]
-                                
-                                PlayerBubbleView(
-                                    name: name,
-                                    score: nil,
-                                    highlited: false,
-                                    canBeDeleted: true,
-                                    onTap: {
-                                        
-                                        removePlayer(name: name)
-                                    }
-                                )
-                            }
+                            let name = playerNames[index]
+                            
+                            PlayerBubbleView(
+                                name: name,
+                                score: nil,
+                                highlited: false,
+                                canBeDeleted: true,
+                                onTap: {
+                                    
+                                    removePlayer(name: name)
+                                }
+                            )
                         }
-                        .padding()
-                        .animation(.default, value: playerNames)
                     }
-                    .frame(height: frame.height / 6)
+                    .padding()
+                    .animation(.default, value: playerNames)
+                }
+                .frame(height: frame.height / Constants.playersFrameDivider)
             }
 
-            TextField(Constants.placeholderNoPlayers, text: $playerName)
+            TextField(Constants.placeholderTextField, text: $playerName)
                 .textFieldStyle(AddPlayerTextFieldStyle(proxy: proxy))
                 .focused($inFocus)
                 .onSubmit {
@@ -209,29 +211,29 @@ private extension GameSetupView {
         }
     }
     
-    @ViewBuilder func makeQuestionCount() -> some View {
-        
-        VStack {
-            
-            HStack {
-                
-                Text(Constants.Sections.questionCount)
-                    .font(.Shared.segmentTitle)
-                    .padding(.leading)
-                    .foregroundColor(.white)
-                
-                Spacer()
-            }
-            
-            Text(String(Int(numberOfQuestions)) + "/" + String(20))
-                .foregroundColor(.white)
-                .fontWeight(.bold)
-                .padding(.top)
-            
-            Slider(value: $numberOfQuestions, in: 2...20)
-                .padding()
-        }
-    }
+//    @ViewBuilder func makeQuestionCount() -> some View {
+//
+//        VStack {
+//
+//            HStack {
+//
+//                Text(Constants.Sections.questionCount)
+//                    .font(.Shared.segmentTitle)
+//                    .padding(.leading)
+//                    .foregroundColor(.white)
+//
+//                Spacer()
+//            }
+//
+//            Text(String(Int(numberOfQuestions)) + "/" + String(20))
+//                .foregroundColor(.white)
+//                .fontWeight(.bold)
+//                .padding(.top)
+//
+//            Slider(value: $numberOfQuestions, in: 2...20)
+//                .padding()
+//        }
+//    }
     
     @ViewBuilder func makeDifficulties() -> some View {
         
@@ -247,22 +249,40 @@ private extension GameSetupView {
                 Spacer()
             }
             
-            Picker("", selection: $selectedDifficulty) {
+            HStack {
                 
-                ForEach(diffiecuties, id: \.self) { difficulty in
+                ForEach(Constants.Difficulties.allCases, id: \.hashValue) { difficulty in
                     
-                    Text(difficulty)
+                    let isSelected = isDifficultySelected(difficulty: difficulty)
+                    
+                    Button(difficulty.rawValue) {
+                        
+                        withAnimation(.default) {
+                            
+                            selectDificulty(difficulty: difficulty)
+                        }
+                    }
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                    .padding()
+                    .background {
+                        
+                        if isSelected {
+                            
+                            RoundedRectangle(cornerRadius: 20)
+                                .matchedGeometryEffect(id: "difficulty", in: namespace, isSource: isSelected)
+                                .foregroundColor(Color.Shared.secondary)
+                        }
+                    }
                 }
             }
-            .pickerStyle(.segmented)
-            .padding()
         }
     }
     
     @ViewBuilder func makeStartGame(proxy: GeometryProxy) -> some View {
         
         let disabled = playerNames.count < 1 || selectedCategories.isEmpty
-        let buttonWidth = proxy.frame(in: .local).width / 2
+        let buttonWidth = proxy.frame(in: .local).width / Constants.startGameDivider
         
         Button(Constants.startGameButtonTitle) {
             
@@ -279,6 +299,16 @@ private extension GameSetupView {
 //MARK: - Helper methods
 
 private extension GameSetupView {
+    
+    func isDifficultySelected(difficulty: Constants.Difficulties) -> Bool {
+        
+        return difficulty == selectedDifficulty
+    }
+    
+    func selectDificulty(difficulty: Constants.Difficulties) {
+        
+        selectedDifficulty = difficulty
+    }
     
     func handleCategorySelection(categoryName: String) {
         
@@ -326,18 +356,28 @@ private extension GameSetupView {
     enum Constants {
         
         static let startGameButtonTitle: String = "Start Game"
-        static let placeholderNoPlayers: String = "no players"
-        static let placeholderTextField: String = "add player"
+        static let placeholderNoPlayers: String = "No players"
+        static let placeholderTextField: String = "Add player"
         
         static let spacingDivider: CGFloat = 40
         static let itemSizeDivider: CGFloat = 14
         
+        static let playersFrameDivider: CGFloat = 6
+        static let startGameDivider: CGFloat = 2
+        
         enum Sections {
             
-            static let players: String = "Players:"
-            static let catgories: String = "Categories:"
-            static let difficulty: String = "Difficulty:"
+            static let players: String = "Players"
+            static let catgories: String = "Categories"
+            static let difficulty: String = "Difficulty"
             static let questionCount: String = "Number of questions"
+        }
+        
+        enum Difficulties: String, CaseIterable {
+            
+            case Easy
+            case Medium
+            case Hard
         }
     }
 }
