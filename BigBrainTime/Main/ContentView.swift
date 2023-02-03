@@ -11,6 +11,13 @@ struct ContentView: View {
     
     var body: some View {
         
-        MainMenuView()
+        let networkClient = NetworkService()
+        let gameService = GameService(
+            networkClient: networkClient
+        )
+        
+        MainMenuView(
+            gameService: gameService
+        )
     }
 }

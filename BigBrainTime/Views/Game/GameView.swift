@@ -58,7 +58,7 @@ struct GameView: View {
     }
 }
 
-//MARK: - Game methods
+//MARK: - Top bar
 
 private extension GameView {
     
@@ -93,6 +93,11 @@ private extension GameView {
         }
         .frame(height: proxy.safeAreaInsets.top)
     }
+}
+
+// MARK: - Players
+
+private extension GameView {
     
     @ViewBuilder func makePlayerList(proxy: GeometryProxy) -> some View {
         
@@ -105,24 +110,29 @@ private extension GameView {
                 Spacer()
                 
                 ForEach(game.players.indices, id: \.self) { index in
-
+                    
                     let player = game.players[index]
                     let isCurrentlyPlaying = currentPlayerIndex == index
-                        
-                        PlayerBubbleView(
-                            name: player.name,
-                            score: player.score,
-                            highlited: isCurrentlyPlaying,
-                            canBeDeleted: false,
-                            onTap: { }
-                        )
-                        .frame(height: frame.height / 7.5)
-                        .animation(.default, value: isCurrentlyPlaying)
+                    
+                    PlayerBubbleView(
+                        name: player.name,
+                        score: player.score,
+                        highlited: isCurrentlyPlaying,
+                        canBeDeleted: false,
+                        onTap: { }
+                    )
+                    .frame(height: frame.height / 7.5)
+                    .animation(.default, value: isCurrentlyPlaying)
                 }
             }
             .frame(height: frame.height / 7)
         }
     }
+}
+
+// MARK: - Questions
+
+private extension GameView {
     
     @ViewBuilder func makeQuestion() -> some View {
         
@@ -177,16 +187,20 @@ private extension GameView {
             .padding()
         }
     }
+}
+
+// MARK: - End game
+
+private extension GameView {
     
     @ViewBuilder func makeGameEnd() -> some View {
-        
-        let playerScores = getSortedPlayers()
         
         ZStack {
             
             Color.Shared.background
                 .ignoresSafeArea()
             
+                
             VStack {
                 
                 HStack {
@@ -205,32 +219,76 @@ private extension GameView {
                     Spacer()
                 }
                 
-                Spacer()
-                
-                List {
+                ScrollView {
                     
-                    ForEach(playerScores) { playerScore in
+                    VStack {
                         
-                        HStack {
-                            Text(playerScore.name)
-                                .fontWeight(.bold)
-                                .foregroundColor(.white)
-                            
-                            Spacer()
-                            
-                            Text("\(playerScore.score)")
-                                .fontWeight(.bold)
-                                .foregroundColor(.white)
-                        }
-                        .listRowBackground(Color.Shared.background)
+                        makePlayersScore()
+                        
+                        makeQuestionAnswers()
                     }
                 }
-                .listStyle(.plain)
-                .padding()
-                
-                Spacer()
             }
         }
+    }
+    
+    @ViewBuilder func makePlayersScore() -> some View {
+        
+        let playerScores = getSortedPlayers()
+        
+        LazyVGrid(columns: [GridItem(.flexible())]) {
+            
+            ForEach(playerScores) { playerScore in
+                
+                HStack {
+                    
+                    Text(playerScore.name)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                        .padding(.leading)
+                        .padding(.bottom)
+                    
+                    Spacer()
+                    
+                    Text("\(playerScore.score)")
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                        .padding(.trailing)
+                }
+            }
+        }
+        .padding()
+    }
+    
+    @ViewBuilder func makeQuestionAnswers() -> some View {
+        
+        let questions = game.questions
+        
+        LazyVGrid(columns: [GridItem(.flexible())]) {
+            
+            ForEach(questions, id: \.text) { question in
+                
+                VStack {
+                    
+                    Text(question.text)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                        .padding(.bottom)
+                    
+                    ForEach(question.answers) { answer in
+                        
+                        if answer.isCorrect {
+                            
+                            Text("Correct answer: " + answer.value)
+                                .fontWeight(.bold)
+                                .foregroundColor(Color.Shared.secondary)
+                        }
+                    }
+                }
+                .padding(.bottom)
+            }
+        }
+        .padding()
     }
 }
 

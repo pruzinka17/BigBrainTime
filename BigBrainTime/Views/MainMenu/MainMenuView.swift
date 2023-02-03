@@ -9,7 +9,14 @@ import SwiftUI
 
 struct MainMenuView: View {
     
+    private let gameService: GameService
+    
     @State var isPresentingGameSetup = false
+    
+    init(gameService: GameService) {
+        
+        self.gameService = gameService
+    }
     
     var body: some View {
         
@@ -34,7 +41,7 @@ struct MainMenuView: View {
             }
             .fullScreenCover(isPresented: $isPresentingGameSetup) {
                 
-                GameSetupView(categories: CategoriesProvider().provideCategories())
+                GameSetupView(gameService: gameService)
             }
         }
     }
@@ -92,10 +99,10 @@ private extension MainMenuView {
 
 // MARK: - Preview
 
-struct MainMenuView_Previews: PreviewProvider {
-    
-    static var previews: some View {
-        
-        MainMenuView()
-    }
-}
+//struct MainMenuView_Previews: PreviewProvider {
+//
+//    static var previews: some View {
+//
+//        MainMenuView()
+//    }
+//}

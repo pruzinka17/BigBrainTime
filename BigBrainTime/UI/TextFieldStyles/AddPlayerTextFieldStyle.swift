@@ -9,25 +9,24 @@ import SwiftUI
 
 struct AddPlayerTextFieldStyle: TextFieldStyle {
     
-    let proxy: GeometryProxy
+    let size: CGSize
     
     func _body(configuration: TextField<Self._Label>) -> some View {
-        
-        let frame = proxy.frame(in: .local)
         
         configuration
             .multilineTextAlignment(.center)
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
             .foregroundColor(.black)
+            .frame(width: size.width, height: size.height)
             .padding()
             .background {
                 
                 RoundedRectangle(cornerRadius: 20)
-                    .frame(width: frame.width / 1.5, height: frame.height / 15)
+                    .frame(width: size.width, height: size.height)
                     .foregroundColor(.white)
             }
             .padding()
-            .submitLabel(.continue)
+            .submitLabel(.next)
     }
 }

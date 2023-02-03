@@ -9,24 +9,38 @@ import SwiftUI
 
 struct GameSetupView: View {
     
+    private let gameService: GameService
+    
     @Environment(\.dismiss) private var dismissCurrentView
-    
-    let categories: [String]
-    
-    @FocusState private var inFocus: Bool
-    
-    @Namespace var namespace
     
     @State var isPresentingGame: Bool = false
     
+    // MARK: - Players
+    
+    @FocusState private var isPlayerTextFieldFocus: Bool
+    
     @State var playerName: String = ""
-    @State var selectedPlayer: String?
     @State var playerNames: [String] = []
+    
+    // MARK: - Categories
+    
+    @State var categories: [Category] = []
     @State var selectedCategories: [String] = []
     
-    @State private var selectedDifficulty: Constants.Difficulties = Constants.Difficulties.Medium
+    // MARK: - Questions
     
     @State var numberOfQuestions: Double = 2
+    
+    // MARK: - Difficulties
+    
+    @State private var selectedDifficulty: Difficulties = .Medium
+    
+    @Namespace var difficulatiesNamespace
+    
+    init(gameService: GameService) {
+        
+        self.gameService = gameService
+    }
     
     var body: some View {
         
@@ -47,24 +61,25 @@ struct GameSetupView: View {
                         
                         makeCategories(proxy: proxy)
                         
-//                        makeQuestionCount()
+                        makeQuestions(proxy: proxy)
                         
                         makeDifficulties()
+                            .padding(.bottom)
+                        
+                        makeStartGame(proxy: proxy)
                     }
-                    .padding(.top)
-                    
-                    Spacer()
-                    
-                    makeStartGame(proxy: proxy)
                 }
             }
         }
+        .task {
+            
+            let categories = await gameService.fetchCateogires()
+            self.categories = categories
+        }
         .onAppear {
             
-            inFocus = true
-            selectedCategories.append(categories[0])
+            isPlayerTextFieldFocus = true
         }
-        .ignoresSafeArea(.keyboard)
         .fullScreenCover(isPresented: $isPresentingGame) {
             
             GameView(game: generateGame())
@@ -72,17 +87,13 @@ struct GameSetupView: View {
     }
 }
 
-//MARK: - GameSetup methods
+// MARK: - Top bar
 
 private extension GameSetupView {
     
     @ViewBuilder func makeTopBar(proxy: GeometryProxy) -> some View {
         
         ZStack {
-            
-            Color.Shared.background2
-                .ignoresSafeArea()
-                .shadow(radius: 6)
             
             HStack {
                 
@@ -91,7 +102,7 @@ private extension GameSetupView {
                     dismissCurrentView()
                 } label: {
                     
-                    Label("", systemImage: "return")
+                    Image(systemName: "return")
                         .foregroundColor(Color.Shared.secondary)
                         .fontWeight(.bold)
                 }
@@ -99,13 +110,27 @@ private extension GameSetupView {
                 
                 Spacer()
             }
+            
+            HStack {
+                
+                Text(Constants.gameSetupTitle)
+                    .foregroundColor(.white)
+                    .font(.Shared.gameSetupTitleFont)
+            }
         }
         .frame(height: proxy.safeAreaInsets.top)
     }
+}
+
+// MARK: - Players
+
+private extension GameSetupView {
     
     @ViewBuilder func makePlayers(proxy: GeometryProxy) -> some View {
         
         let frame = proxy.frame(in: .local)
+        let height = frame.height + proxy.safeAreaInsets.top + proxy.safeAreaInsets.bottom
+        let textFieldSize = CGSize(width: frame.width * 0.75, height: height * 0.05)
         
         VStack {
             
@@ -121,15 +146,15 @@ private extension GameSetupView {
             
             switch playerNames.isEmpty {
                 
-                case true:
-                    
+            case true:
+                
                 Text(Constants.placeholderNoPlayers)
                     .font(.Shared.noPlayers)
                     .opacity(0.3)
                     .padding()
-                    .frame(height: frame.height / Constants.playersFrameDivider)
-                    
-                case false:
+                    .frame(height: height / Constants.playersFrameDivider)
+                
+            case false:
                 
                 ScrollView(.horizontal, showsIndicators: false) {
                     
@@ -154,21 +179,25 @@ private extension GameSetupView {
                     .padding()
                     .animation(.default, value: playerNames)
                 }
-                .frame(height: frame.height / Constants.playersFrameDivider)
+                .frame(height: height / Constants.playersFrameDivider)
             }
-
+            
             TextField(Constants.placeholderTextField, text: $playerName)
-                .textFieldStyle(AddPlayerTextFieldStyle(proxy: proxy))
-                .focused($inFocus)
+                .textFieldStyle(AddPlayerTextFieldStyle(size: textFieldSize))
+                .focused($isPlayerTextFieldFocus)
                 .onSubmit {
                     
-                    inFocus = true
-                    if !playerName.isEmpty {
-                        addPlayer()
-                    }
+                    isPlayerTextFieldFocus = true
+                    
+                    addPlayer()
                 }
         }
     }
+}
+
+// MARK: - Categories
+
+private extension GameSetupView {
     
     @ViewBuilder func makeCategories(proxy: GeometryProxy) -> some View {
         
@@ -188,13 +217,13 @@ private extension GameSetupView {
                 
                 HStack {
                     
-                    ForEach(categories, id: \.self) { category in
+                    ForEach(categories, id: \.name) { category in
                         
-                        let isSelected = isCategorySelected(categoryName: category)
+                        let isSelected = isCategorySelected(category.value)
                         
-                        Button(category) {
+                        Button(category.name) {
                             
-                            handleCategorySelection(categoryName: category)
+                            handleCategorySelection(category.value)
                         }
                         .padding()
                         .background {
@@ -202,6 +231,7 @@ private extension GameSetupView {
                             RoundedRectangle(cornerRadius: 20)
                                 .foregroundColor(Color.Shared.secondary)
                         }
+                        .fontWeight(.bold)
                         .foregroundColor(.white)
                         .opacity(isSelected ? 1 : 0.3)
                     }
@@ -210,30 +240,48 @@ private extension GameSetupView {
             }
         }
     }
+}
     
-//    @ViewBuilder func makeQuestionCount() -> some View {
-//
-//        VStack {
-//
-//            HStack {
-//
-//                Text(Constants.Sections.questionCount)
-//                    .font(.Shared.segmentTitle)
-//                    .padding(.leading)
-//                    .foregroundColor(.white)
-//
-//                Spacer()
-//            }
-//
-//            Text(String(Int(numberOfQuestions)) + "/" + String(20))
-//                .foregroundColor(.white)
-//                .fontWeight(.bold)
-//                .padding(.top)
-//
-//            Slider(value: $numberOfQuestions, in: 2...20)
-//                .padding()
-//        }
-//    }
+// MARK: - Questions
+
+private extension GameSetupView {
+    
+    @ViewBuilder func makeQuestions(proxy: GeometryProxy) -> some View {
+        
+        let frame = proxy.frame(in: .local)
+        
+        VStack {
+            
+            HStack {
+                
+                Text(Constants.Sections.questionCount)
+                    .font(.Shared.segmentTitle)
+                    .padding(.leading)
+                    .foregroundColor(.white)
+                
+                Spacer()
+            }
+            
+            HStack(alignment: .center) {
+                
+                Slider(value: $numberOfQuestions, in: Question.questionLimit)
+                    .accentColor(.orange)
+                    .padding(.trailing)
+                
+                Text("\(Int(numberOfQuestions)) / \(Int(Question.questionLimit.upperBound))")
+                    .foregroundColor(.white)
+                    .fontWeight(.bold)
+                    .padding(.leading)
+                    .frame(width: frame.width * 0.2)
+            }
+            .padding()
+        }
+    }
+}
+
+// MARK: - Difficulties
+
+private extension GameSetupView {
     
     @ViewBuilder func makeDifficulties() -> some View {
         
@@ -251,7 +299,7 @@ private extension GameSetupView {
             
             HStack {
                 
-                ForEach(Constants.Difficulties.allCases, id: \.hashValue) { difficulty in
+                ForEach(Difficulties.allCases, id: \.hashValue) { difficulty in
                     
                     let isSelected = isDifficultySelected(difficulty: difficulty)
                     
@@ -270,14 +318,23 @@ private extension GameSetupView {
                         if isSelected {
                             
                             RoundedRectangle(cornerRadius: 20)
-                                .matchedGeometryEffect(id: "difficulty", in: namespace, isSource: isSelected)
                                 .foregroundColor(Color.Shared.secondary)
+                                .matchedGeometryEffect(
+                                    id: "difficulty",
+                                    in: difficulatiesNamespace,
+                                    isSource: isSelected
+                                )
                         }
                     }
                 }
             }
         }
     }
+}
+
+// MARK: - Start game
+
+private extension GameSetupView {
     
     @ViewBuilder func makeStartGame(proxy: GeometryProxy) -> some View {
         
@@ -300,41 +357,14 @@ private extension GameSetupView {
 
 private extension GameSetupView {
     
-    func isDifficultySelected(difficulty: Constants.Difficulties) -> Bool {
+    func addPlayer() {
         
-        return difficulty == selectedDifficulty
-    }
-    
-    func selectDificulty(difficulty: Constants.Difficulties) {
-        
-        selectedDifficulty = difficulty
-    }
-    
-    func handleCategorySelection(categoryName: String) {
-        
-        if isCategorySelected(categoryName: categoryName) {
-            
-            selectedCategories.removeAll(where: { $0 == categoryName } )
-        } else {
-            
-            selectedCategories.append(categoryName)
+        guard !playerName.isEmpty && !playerNames.contains(playerName) else {
+            return
         }
-    }
-    
-    func isCategorySelected(categoryName: String) -> Bool {
         
-        return selectedCategories.contains(categoryName)
-    }
-    
-    func generateGame() -> Game {
-        
-        let players = playerNames.map { Player(id: UUID().uuidString, name: $0) }
-        let game: Game = Game(
-            questions: QuestionsBuilder().buildQuestions(),
-            players: players
-        )
-        
-        return game
+        playerNames.append(playerName)
+        playerName = ""
     }
     
     func removePlayer(name: String) {
@@ -342,10 +372,43 @@ private extension GameSetupView {
         playerNames.removeAll { $0 == name }
     }
     
-    func addPlayer() {
+    func handleCategorySelection(_ value: String) {
         
-        playerNames.append(playerName)
-        playerName = ""
+        switch isCategorySelected(value) {
+        case true:
+            
+            selectedCategories.removeAll(where: { $0 == value } )
+        case false:
+            
+            selectedCategories.append(value)
+        }
+    }
+    
+    func isCategorySelected(_ value: String) -> Bool {
+        
+        return selectedCategories.contains(value)
+    }
+    
+    func isDifficultySelected(difficulty: Difficulties) -> Bool {
+        
+        return difficulty == selectedDifficulty
+    }
+    
+    func selectDificulty(difficulty: Difficulties) {
+        
+        selectedDifficulty = difficulty
+    }
+    
+    func generateGame() -> Game {
+        
+        let players = playerNames.map { Player(id: UUID().uuidString, name: $0) }
+        
+        let game: Game = Game(
+            questions: QuestionsBuilder().buildQuestions(),
+            players: players
+        )
+        
+        return game
     }
 }
 
@@ -358,11 +421,12 @@ private extension GameSetupView {
         static let startGameButtonTitle: String = "Start Game"
         static let placeholderNoPlayers: String = "No players"
         static let placeholderTextField: String = "Add player"
+        static let gameSetupTitle: String = "Game Setup"
         
         static let spacingDivider: CGFloat = 40
         static let itemSizeDivider: CGFloat = 14
         
-        static let playersFrameDivider: CGFloat = 6
+        static let playersFrameDivider: CGFloat = 7
         static let startGameDivider: CGFloat = 2
         
         enum Sections {
@@ -372,22 +436,15 @@ private extension GameSetupView {
             static let difficulty: String = "Difficulty"
             static let questionCount: String = "Number of questions"
         }
-        
-        enum Difficulties: String, CaseIterable {
-            
-            case Easy
-            case Medium
-            case Hard
-        }
     }
 }
 
 // MARK: - Preview
 
-struct GameSetupView_Previews: PreviewProvider {
-    
-    static var previews: some View {
-        
-        GameSetupView(categories: CategoriesProvider().provideCategories())
-    }
-}
+//struct GameSetupView_Previews: PreviewProvider {
+//    
+//    static var previews: some View {
+//        
+//        GameSetupView(categories: CategoriesProvider().provideCategories())
+//    }
+//}

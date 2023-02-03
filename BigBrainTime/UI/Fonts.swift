@@ -13,6 +13,8 @@ extension Font {
         
         static let logo = Font.system(size: 50, weight: .bold, design: .rounded)
         
+        static let gameSetupTitleFont = Font.system(size: 24, weight: .bold, design: .rounded)
+        
         static let newGameButton = Font.system(size: 24, weight: .bold, design: .rounded)
         
         static let playerName = Font.system(size: 14, weight: .thin, design: .rounded)
