@@ -114,9 +114,7 @@ private extension GameView {
                             score: player.score,
                             highlited: isCurrentlyPlaying,
                             canBeDeleted: false,
-                            onTap: {
-                                
-                            }
+                            onTap: { }
                         )
                         .frame(height: frame.height / 7.5)
                         .animation(.default, value: isCurrentlyPlaying)

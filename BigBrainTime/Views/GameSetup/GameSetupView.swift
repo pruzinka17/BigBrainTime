@@ -25,6 +25,8 @@ struct GameSetupView: View {
     @State private var diffiecuties: [String] = ["easy", "medium", "hard"]
     @State private var selectedDifficulty: String = "medium"
     
+    @State var numberOfQuestions: Double = 2
+    
     var body: some View {
         
         ZStack {
@@ -40,9 +42,11 @@ struct GameSetupView: View {
                         
                     ScrollView(showsIndicators: false) {
                         
-                        makePlayerSetup(proxy: proxy)
+                        makePlayers(proxy: proxy)
                         
-                        makeCategoryChooser(proxy: proxy)
+                        makeCategories(proxy: proxy)
+                        
+                        makeQuestionCount()
                         
                         makeDifficulties()
                     }
@@ -97,7 +101,7 @@ private extension GameSetupView {
         .frame(height: proxy.safeAreaInsets.top)
     }
     
-    @ViewBuilder func makePlayerSetup(proxy: GeometryProxy) -> some View {
+    @ViewBuilder func makePlayers(proxy: GeometryProxy) -> some View {
         
         let frame = proxy.frame(in: .local)
         
@@ -164,7 +168,7 @@ private extension GameSetupView {
         }
     }
     
-    @ViewBuilder func makeCategoryChooser(proxy: GeometryProxy) -> some View {
+    @ViewBuilder func makeCategories(proxy: GeometryProxy) -> some View {
         
         VStack {
             
@@ -177,7 +181,6 @@ private extension GameSetupView {
                 
                 Spacer()
             }
-            
             
             ScrollView(.horizontal, showsIndicators: false) {
                 
@@ -203,6 +206,30 @@ private extension GameSetupView {
                 }
                 .padding()
             }
+        }
+    }
+    
+    @ViewBuilder func makeQuestionCount() -> some View {
+        
+        VStack {
+            
+            HStack {
+                
+                Text(Constants.Sections.questionCount)
+                    .font(.Shared.segmentTitle)
+                    .padding(.leading)
+                    .foregroundColor(.white)
+                
+                Spacer()
+            }
+            
+            Text(String(Int(numberOfQuestions)) + "/" + String(20))
+                .foregroundColor(.white)
+                .fontWeight(.bold)
+                .padding(.top)
+            
+            Slider(value: $numberOfQuestions, in: 2...20)
+                .padding()
         }
     }
     
@@ -310,6 +337,7 @@ private extension GameSetupView {
             static let players: String = "Players:"
             static let catgories: String = "Categories:"
             static let difficulty: String = "Difficulty:"
+            static let questionCount: String = "Number of questions"
         }
     }
 }
