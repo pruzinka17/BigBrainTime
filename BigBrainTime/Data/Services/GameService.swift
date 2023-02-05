@@ -44,13 +44,37 @@ final class GameService {
         }
     }
     
-    func fetchQuestions(
-        for categories: [String],
-        and difficulty: Difficulties,
-        limit: Int
-    ) async -> [Question] {
+    func fetchQuestions(for categories: [String], and difficulty: Difficulties, limit: Int) async -> [Question] {
         
-        return []
+        let path = "questions?\(categories.joined(separator: ","))&limit=\(limit)&\(Constants.region)&difficulty=\(difficulty)"
+        
+        let result: Result<QuestionsDTO, Error> = await networkClient.fetch(path: path)
+        
+        switch result {
+        case let .success(response):
+            
+            var questions: [Question] = []
+                
+            for question in response.questions {
+                
+                var answers: [Question.Answer] = []
+                
+                for answer in question.incorrectAnswers {
+                    
+                    answers.append(Question.Answer(id: UUID().uuidString, value: answer, isCorrect: false))
+                }
+                
+                answers.append(Question.Answer(id: UUID().uuidString, value: question.correctAnswer, isCorrect: true))
+                
+                questions.append(Question(text: question.question, category: question.category, answers: answers))
+            }
+            
+            return questions
+        case let .failure(error):
+            
+            print(error)
+            return []
+        }
     }
     
     func provideAllCategories(dto: CategoriesDTO) -> [String] {
@@ -69,5 +93,13 @@ final class GameService {
         allCategories.append(contentsOf: dto.sportAndLeisure)
             
         return allCategories
+    }
+}
+
+private extension GameService {
+    
+    enum Constants {
+        
+        static let region: String = "region=CZ"
     }
 }

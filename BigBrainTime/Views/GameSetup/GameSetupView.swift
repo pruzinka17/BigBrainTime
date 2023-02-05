@@ -27,8 +27,6 @@ struct GameSetupView: View {
     @State var categories: [Category] = []
     @State var selectedCategories: [String] = []
     
-    @State private var isFetchingCategories: Bool = true
-    
     // MARK: - Questions
     
     @State var numberOfQuestions: Double = 2
@@ -76,7 +74,6 @@ struct GameSetupView: View {
         .task {
             
             let categories = await gameService.fetchCateogires()
-            isFetchingCategories = false
             self.categories = categories
         }
         .onAppear {
@@ -216,7 +213,7 @@ private extension GameSetupView {
                 Spacer()
             }
             
-            if !isFetchingCategories {
+            if !categories.isEmpty {
                 
                 ScrollView(.horizontal, showsIndicators: false) {
                     

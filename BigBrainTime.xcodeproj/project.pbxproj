@@ -26,6 +26,7 @@
 		F7A5485F2982B6A400BBDC89 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A5485E2982B6A400BBDC89 /* GameView.swift */; };
 		F7A9CD1C298D102900FC163E /* EndGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A9CD1B298D102900FC163E /* EndGameView.swift */; };
 		F7AE029629840F82000F4643 /* AddPlayerTextFieldStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE029529840F82000F4643 /* AddPlayerTextFieldStyle.swift */; };
+		F7D7CA77298E8CDE004F707E /* QuestionDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D7CA76298E8CDE004F707E /* QuestionDTO.swift */; };
 		F7F091FE29894BD500850422 /* PlayerBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F091FD29894BD500850422 /* PlayerBubbleView.swift */; };
 /* End PBXBuildFile section */
 
@@ -50,6 +51,7 @@
 		F7A5485E2982B6A400BBDC89 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		F7A9CD1B298D102900FC163E /* EndGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndGameView.swift; sourceTree = "<group>"; };
 		F7AE029529840F82000F4643 /* AddPlayerTextFieldStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPlayerTextFieldStyle.swift; sourceTree = "<group>"; };
+		F7D7CA76298E8CDE004F707E /* QuestionDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionDTO.swift; sourceTree = "<group>"; };
 		F7F091FD29894BD500850422 /* PlayerBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerBubbleView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -84,6 +86,7 @@
 			isa = PBXGroup;
 			children = (
 				F7022522298D33CB00C1A931 /* CategoriesDTO.swift */,
+				F7D7CA76298E8CDE004F707E /* QuestionDTO.swift */,
 			);
 			path = DTO;
 			sourceTree = "<group>";
@@ -321,6 +324,7 @@
 				F79359A4298113AA00F5EFDD /* BigBrainTimeApp.swift in Sources */,
 				F7802EAA2981811100B8B2D8 /* GameSetupView.swift in Sources */,
 				F7022523298D33CB00C1A931 /* CategoriesDTO.swift in Sources */,
+				F7D7CA77298E8CDE004F707E /* QuestionDTO.swift in Sources */,
 				F74324C42981635B00C61C25 /* MainButtonStyle.swift in Sources */,
 				F7022527298D363200C1A931 /* QuestionModel.swift in Sources */,
 			);
