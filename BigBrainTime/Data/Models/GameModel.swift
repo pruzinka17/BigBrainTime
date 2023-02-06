@@ -21,7 +21,7 @@ final class Game {
 
 enum Difficulties: String, CaseIterable {
     
-    case Easy
-    case Medium
-    case Hard
+    case easy
+    case medium
+    case hard
 }

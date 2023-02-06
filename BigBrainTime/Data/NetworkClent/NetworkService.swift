@@ -12,17 +12,13 @@ final class NetworkService {
     private let session: URLSession
     private let decoder: JSONDecoder
     
-    init(
-        session: URLSession = .shared
-    ) {
+    init(session: URLSession = .shared) {
         
         self.session = session
         self.decoder = JSONDecoder()
     }
     
-    func fetch<T: Codable>(
-        path: String
-    ) async -> Result<T, Error> {
+    func fetch<T: Codable>(path: String) async -> Result<T, Error> {
         
         let endpoint = "\(Configuration.domain)/\(path)"
         

@@ -44,29 +44,52 @@ final class GameService {
         }
     }
     
-    func fetchQuestions(for categories: [String], and difficulty: Difficulties, limit: Int) async -> [Question] {
+    func fetchQuestions(
+        for categories: [String],
+        and difficulty: Difficulties,
+        limit: Int
+    ) async -> [Question] {
         
-        let path = "questions?\(categories.joined(separator: ","))&limit=\(limit)&\(Constants.region)&difficulty=\(difficulty)"
+        let categoriesQuery = categories.joined(separator: ",")
+        let path = "questions?categories=\(categoriesQuery)&limit=\(limit)&\(Constants.region)&difficulty=\(difficulty)"
         
-        let result: Result<QuestionsDTO, Error> = await networkClient.fetch(path: path)
+        let result: Result<[QuestionDTO], Error> = await networkClient.fetch(path: path)
         
         switch result {
-        case let .success(response):
+        case let .success(questionDtos):
             
             var questions: [Question] = []
                 
-            for question in response.questions {
+            for questionDto in questionDtos {
                 
                 var answers: [Question.Answer] = []
                 
-                for answer in question.incorrectAnswers {
+                for answerDto in questionDto.incorrectAnswers {
                     
-                    answers.append(Question.Answer(id: UUID().uuidString, value: answer, isCorrect: false))
+                    let answer = Question.Answer(
+                        id: UUID().uuidString,
+                        value: answerDto,
+                        isCorrect: false
+                    )
+                    
+                    answers.append(answer)
                 }
                 
-                answers.append(Question.Answer(id: UUID().uuidString, value: question.correctAnswer, isCorrect: true))
+                let correctAnswer = Question.Answer(
+                    id: UUID().uuidString,
+                    value: questionDto.correctAnswer,
+                    isCorrect: true
+                )
                 
-                questions.append(Question(text: question.question, category: question.category, answers: answers))
+                answers.append(correctAnswer)
+                
+                let question = Question(
+                    text: questionDto.question,
+                    category: questionDto.category,
+                    answers: answers
+                )
+                
+                questions.append(question)
             }
             
             return questions
@@ -76,6 +99,11 @@ final class GameService {
             return []
         }
     }
+}
+
+// MARK: - Cateogires helper
+
+private extension GameService {
     
     func provideAllCategories(dto: CategoriesDTO) -> [String] {
             
@@ -95,6 +123,8 @@ final class GameService {
         return allCategories
     }
 }
+
+// MARK: - Constants
 
 private extension GameService {
     

@@ -9,37 +9,21 @@ import SwiftUI
 
 struct GameSetupView: View {
     
-    private let gameService: GameService
+    @ObservedObject var presenter: GameSetupPresenter
     
     @Environment(\.dismiss) private var dismissCurrentView
     
     @State var isPresentingGame: Bool = false
     
-    // MARK: - Players
-    
     @FocusState private var isPlayerTextFieldFocus: Bool
-    
-    @State var playerName: String = ""
-    @State var playerNames: [String] = []
-    
-    // MARK: - Categories
-    
-    @State var categories: [Category] = []
-    @State var selectedCategories: [String] = []
-    
-    // MARK: - Questions
-    
-    @State var numberOfQuestions: Double = 2
-    
-    // MARK: - Difficulties
-    
-    @State private var selectedDifficulty: Difficulties = .Medium
     
     @Namespace var difficulatiesNamespace
     
     init(gameService: GameService) {
         
-        self.gameService = gameService
+        self.presenter = GameSetupPresenter(
+            gameService: gameService
+        )
     }
     
     var body: some View {
@@ -73,8 +57,7 @@ struct GameSetupView: View {
         }
         .task {
             
-            let categories = await gameService.fetchCateogires()
-            self.categories = categories
+            await self.presenter.fetchCategories()
         }
         .onAppear {
             
@@ -82,7 +65,7 @@ struct GameSetupView: View {
         }
         .fullScreenCover(isPresented: $isPresentingGame) {
             
-            GameView(game: generateGame())
+            GameView(game: presenter.game!)
         }
     }
 }
@@ -144,7 +127,7 @@ private extension GameSetupView {
                 Spacer()
             }
             
-            switch playerNames.isEmpty {
+            switch presenter.viewModel.playerNames.isEmpty {
                 
             case true:
                 
@@ -160,9 +143,9 @@ private extension GameSetupView {
                     
                     HStack {
                         
-                        ForEach(playerNames.indices, id: \.self) { index in
+                        ForEach(presenter.viewModel.playerNames.indices, id: \.self) { index in
                             
-                            let name = playerNames[index]
+                            let name = presenter.viewModel.playerNames[index]
                             
                             PlayerBubbleView(
                                 name: name,
@@ -171,25 +154,25 @@ private extension GameSetupView {
                                 canBeDeleted: true,
                                 onTap: {
                                     
-                                    removePlayer(name: name)
+                                    presenter.removePlayer(name: name)
                                 }
                             )
                         }
                     }
                     .padding()
-                    .animation(.default, value: playerNames)
+                    .animation(.default, value: presenter.viewModel.playerNames)
                 }
                 .frame(height: height / Constants.playersFrameDivider)
             }
             
-            TextField(Constants.placeholderTextField, text: $playerName)
+            TextField(Constants.placeholderTextField, text: $presenter.viewModel.currentPlayerName)
                 .textFieldStyle(AddPlayerTextFieldStyle(size: textFieldSize))
                 .focused($isPlayerTextFieldFocus)
                 .onSubmit {
                     
                     isPlayerTextFieldFocus = true
                     
-                    addPlayer()
+                    presenter.addPlayer()
                 }
         }
     }
@@ -200,6 +183,8 @@ private extension GameSetupView {
 private extension GameSetupView {
     
     @ViewBuilder func makeCategories(proxy: GeometryProxy) -> some View {
+        
+        let frameHeight = proxy.frame(in: .local).height
         
         VStack {
             
@@ -213,43 +198,55 @@ private extension GameSetupView {
                 Spacer()
             }
             
-            if !categories.isEmpty {
+            VStack {
                 
-                ScrollView(.horizontal, showsIndicators: false) {
+                switch presenter.viewModel.isLoadingCategories {
                     
-                    HStack {
+                case false:
                     
-                        ForEach(categories, id: \.name) { category in
+                    if !presenter.viewModel.categories.isEmpty {
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
                             
-                            let isSelected = isCategorySelected(category.value)
+                            HStack {
                             
-                            Button(category.name) {
-                                
-                                handleCategorySelection(category.value)
+                                ForEach(presenter.viewModel.categories, id: \.name) { category in
+                                    
+                                    let isSelected = presenter.isCategorySelected(category.value)
+                                    
+                                    Button(category.name) {
+                                        
+                                        presenter.handleCategorySelection(category.value)
+                                    }
+                                    .padding()
+                                    .background {
+                                        
+                                        RoundedRectangle(cornerRadius: 20)
+                                            .foregroundColor(Color.Shared.secondary)
+                                    }
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.white)
+                                    .opacity(isSelected ? 1 : 0.3)
+                                }
                             }
                             .padding()
-                            .background {
-                                
-                                RoundedRectangle(cornerRadius: 20)
-                                    .foregroundColor(Color.Shared.secondary)
-                            }
-                            .fontWeight(.bold)
-                            .foregroundColor(.white)
-                            .opacity(isSelected ? 1 : 0.3)
                         }
+                    } else {
+                        
+                        Text("categories couldn't be loaded")
+                            .foregroundColor(Color.red)
                     }
-                    .padding()
-                }
-            } else {
-                
-                HStack {
                     
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: Color.Shared.secondary))
+                case true:
+                        
+                    HStack {
+
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: Color.Shared.secondary))
+                    }
                 }
             }
-            
-
+            .frame(height: frameHeight * 0.1)
         }
     }
 }
@@ -276,11 +273,11 @@ private extension GameSetupView {
             
             HStack(alignment: .center) {
                 
-                Slider(value: $numberOfQuestions, in: Question.questionLimit)
+                Slider(value: $presenter.viewModel.numberOfQuestions, in: Question.questionLimit)
                     .accentColor(.orange)
                     .padding(.trailing)
                 
-                Text("\(Int(numberOfQuestions)) / \(Int(Question.questionLimit.upperBound))")
+                Text("\(Int(presenter.viewModel.numberOfQuestions)) / \(Int(Question.questionLimit.upperBound))")
                     .foregroundColor(.white)
                     .fontWeight(.bold)
                     .padding(.leading)
@@ -313,13 +310,13 @@ private extension GameSetupView {
                 
                 ForEach(Difficulties.allCases, id: \.hashValue) { difficulty in
                     
-                    let isSelected = isDifficultySelected(difficulty: difficulty)
+                    let isSelected = presenter.isDifficultySelected(difficulty: difficulty)
                     
-                    Button(difficulty.rawValue) {
+                    Button(difficulty.rawValue.capitalized) {
                         
                         withAnimation(.default) {
                             
-                            selectDificulty(difficulty: difficulty)
+                            presenter.selectDificulty(difficulty: difficulty)
                         }
                     }
                     .fontWeight(.bold)
@@ -350,81 +347,35 @@ private extension GameSetupView {
     
     @ViewBuilder func makeStartGame(proxy: GeometryProxy) -> some View {
         
-        let disabled = playerNames.count < 1 || selectedCategories.isEmpty
+        let disabled = presenter.viewModel.playerNames.count < 1 || presenter.viewModel.selectedCategories.isEmpty
         let buttonWidth = proxy.frame(in: .local).width / Constants.startGameDivider
         
-        Button(Constants.startGameButtonTitle) {
+        Button {
             
-            isPresentingGame = true
+            Task {
+                
+                await presenter.generateGame()
+                if presenter.game != nil {
+                    isPresentingGame = true
+                }
+            }
+        } label: {
+            
+            if !presenter.viewModel.isGeneratingGame {
+                
+                Text(Constants.startGameButtonTitle)
+                
+            } else {
+                
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: Color.black))
+            }
         }
         .buttonStyle(MainButtonStyle(width: buttonWidth))
         .disabled(disabled)
         .opacity(disabled ? 0.3 : 1)
         .animation(.default, value: disabled)
         .padding()
-    }
-}
-
-//MARK: - Helper methods
-
-private extension GameSetupView {
-    
-    func addPlayer() {
-        
-        guard !playerName.isEmpty && !playerNames.contains(playerName) else {
-            return
-        }
-        
-        playerNames.append(playerName)
-        playerName = ""
-    }
-    
-    func removePlayer(name: String) {
-        
-        playerNames.removeAll { $0 == name }
-    }
-    
-    func handleCategorySelection(_ value: String) {
-        
-        switch isCategorySelected(value) {
-        case true:
-            
-            selectedCategories.removeAll(where: { $0 == value } )
-        case false:
-            
-            selectedCategories.append(value)
-        }
-    }
-    
-    func isCategorySelected(_ value: String) -> Bool {
-        
-        return selectedCategories.contains(value)
-    }
-    
-    func isDifficultySelected(difficulty: Difficulties) -> Bool {
-        
-        return difficulty == selectedDifficulty
-    }
-    
-    func selectDificulty(difficulty: Difficulties) {
-        
-        selectedDifficulty = difficulty
-    }
-    
-    func generateGame() -> Game {
-
-        let players = playerNames.map { Player(id: UUID().uuidString, name: $0) }
-
-        let game: Game = Game(
-            questions: [
-                Question(text: "bla", category: "asd", answers: [
-                    Question.Answer(id: UUID().uuidString, value: "balls", isCorrect: false)
-                ])
-            ],
-            players: players
-        )
-
-        return game
     }
 }
 

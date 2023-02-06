@@ -60,7 +60,7 @@ private extension MainMenuView {
             Rectangle()
                 .foregroundColor(Color.Shared.secondary)
                 .frame(width: frame.width / 5, height: frame.height / 4)
-                    
+            
             Text(Constants.logoText)
                 .foregroundColor(Color.Shared.title)
                 .font(.Shared.logo)
