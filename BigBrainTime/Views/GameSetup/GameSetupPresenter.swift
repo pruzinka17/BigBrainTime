@@ -9,16 +9,26 @@ import Foundation
 
 struct GameSetupViewModel {
     
+    // MARK: - Player
+    
     var currentPlayerName: String
     var playerNames: [String]
+    
+    // MARK: - Categories
     
     var isLoadingCategories: Bool
     var categories: [Category]
     var selectedCategories: [String]
     
+    // MARK: - Questions
+    
     var numberOfQuestions: Double
     
+    // MARK: - Difficulty
+    
     var selectedDifficulty: Difficulties
+    
+    // MARK: - Game
     
     var isGeneratingGame: Bool
 }
@@ -47,7 +57,12 @@ final class GameSetupPresenter: ObservableObject {
         
         self.game = nil
     }
+}
 
+extension GameSetupPresenter {
+    
+    //MARK: - fetch questions
+    
     func generate(
         playerNames: [String],
         categories: [String],
@@ -75,6 +90,8 @@ final class GameSetupPresenter: ObservableObject {
         }
     }
     
+    //MARK: - fetch categories
+    
     func fetchCategories() async {
         
         DispatchQueue.main.async { [weak self] in
@@ -90,9 +107,8 @@ final class GameSetupPresenter: ObservableObject {
             self?.viewModel.isLoadingCategories = false
         }
     }
-}
-
-extension GameSetupPresenter {
+    
+    // MARK: - Player functions
         
     func addPlayer() {
         
@@ -114,6 +130,8 @@ extension GameSetupPresenter {
             self?.viewModel.playerNames.removeAll { $0 == name }
         }
     }
+    
+    //MARK: - Category functions
     
     func handleCategorySelection(_ value: String) {
         
@@ -138,6 +156,8 @@ extension GameSetupPresenter {
         return viewModel.selectedCategories.contains(value)
     }
     
+    //MARK: - Difficulty functions
+    
     func isDifficultySelected(difficulty: Difficulties) -> Bool {
         
         return difficulty == viewModel.selectedDifficulty
@@ -150,6 +170,8 @@ extension GameSetupPresenter {
             self?.viewModel.selectedDifficulty = difficulty
         }
     }
+    
+    //MARK: - generate game
     
     func generateGame() async {
         

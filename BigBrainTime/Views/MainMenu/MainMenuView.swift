@@ -96,13 +96,3 @@ private extension MainMenuView {
         static let newGameButtonText = "New Game"
     }
 }
-
-// MARK: - Preview
-
-//struct MainMenuView_Previews: PreviewProvider {
-//
-//    static var previews: some View {
-//
-//        MainMenuView()
-//    }
-//}

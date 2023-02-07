@@ -206,34 +206,10 @@ private extension GameSetupView {
                     
                     if !presenter.viewModel.categories.isEmpty {
                         
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            
-                            HStack {
-                            
-                                ForEach(presenter.viewModel.categories, id: \.name) { category in
-                                    
-                                    let isSelected = presenter.isCategorySelected(category.value)
-                                    
-                                    Button(category.name) {
-                                        
-                                        presenter.handleCategorySelection(category.value)
-                                    }
-                                    .padding()
-                                    .background {
-                                        
-                                        RoundedRectangle(cornerRadius: 20)
-                                            .foregroundColor(Color.Shared.secondary)
-                                    }
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.white)
-                                    .opacity(isSelected ? 1 : 0.3)
-                                }
-                            }
-                            .padding()
-                        }
+                        makeCategorySelection()
                     } else {
                         
-                        Text("categories couldn't be loaded")
+                        Text(Constants.categoryLoadFailed)
                             .foregroundColor(Color.red)
                     }
                     
@@ -247,6 +223,35 @@ private extension GameSetupView {
                 }
             }
             .frame(height: frameHeight * 0.1)
+        }
+    }
+    
+    @ViewBuilder func makeCategorySelection() -> some View {
+        
+        ScrollView(.horizontal, showsIndicators: false) {
+            
+            HStack {
+            
+                ForEach(presenter.viewModel.categories, id: \.name) { category in
+                    
+                    let isSelected = presenter.isCategorySelected(category.value)
+                    
+                    Button(category.name) {
+                        
+                        presenter.handleCategorySelection(category.value)
+                    }
+                    .padding()
+                    .background {
+                        
+                        RoundedRectangle(cornerRadius: 20)
+                            .foregroundColor(Color.Shared.secondary)
+                    }
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                    .opacity(isSelected ? 1 : 0.3)
+                }
+            }
+            .padding()
         }
     }
 }
@@ -389,6 +394,7 @@ private extension GameSetupView {
         static let placeholderNoPlayers: String = "No players"
         static let placeholderTextField: String = "Add player"
         static let gameSetupTitle: String = "Game Setup"
+        static let categoryLoadFailed: String = "Categories couldn't be loaded"
         
         static let spacingDivider: CGFloat = 40
         static let itemSizeDivider: CGFloat = 14
@@ -405,13 +411,3 @@ private extension GameSetupView {
         }
     }
 }
-
-// MARK: - Preview
-
-//struct GameSetupView_Previews: PreviewProvider {
-//    
-//    static var previews: some View {
-//        
-//        GameSetupView(categories: CategoriesProvider().provideCategories())
-//    }
-//}
