@@ -61,7 +61,7 @@ struct GameSetupView: View {
         }
         .onAppear {
             
-            isPlayerTextFieldFocus = true
+            isPlayerTextFieldFocus = false
         }
         .fullScreenCover(isPresented: $isPresentingGame) {
             

@@ -11,14 +11,16 @@ struct GameView: View {
     
     @Environment(\.dismiss) var dismissCurrentView
     
-    let game: Game
+    @ObservedObject var presenter: GameViewPresenter
     
     @Namespace var namespace
     
-    @State var gameEnded: Bool = false
-    @State var currentPlayerIndex: Int = 0
-    @State var currentQuestionIndex: Int = 0
-    @State var currentAnswers: [Player.ID: Question.Answer.ID] = [:]
+    init(
+        game: Game
+    ) {
+
+        self.presenter = GameViewPresenter(game: game)
+    }
     
     var body: some View {
         
@@ -33,27 +35,28 @@ struct GameView: View {
                     
                     makeTopBar(proxy: proxy)
                     
-                    makeQuestion()
+                    makeQuestion(proxy: proxy)
                     
                     Spacer()
                     
                     makePlayerList(proxy: proxy)
                 }
-                    
-                makeGameEnd()
-                    .animation(.default, value: gameEnded)
-                    .opacity(gameEnded ? 1 : 0)
             }
         }
+        .sheet(isPresented: $presenter.viewModel.showEndGame, content: {
+            
+//            GameEndView(
+//                players: presenter.getPlayers(),
+//                questions: presenter.game.questions,
+//                answers: presenter.playersAnswers
+//            ) {
+//
+//                dismissCurrentView()
+//            }
+        })
         .onAppear {
             
-            guard !gameEnded else {
-                return
-            }
-            
-            currentPlayerIndex = 0
-            currentQuestionIndex = 0
-            currentAnswers = [:]
+            presenter.present()
         }
     }
 }
@@ -85,13 +88,67 @@ private extension GameView {
                 
                 Spacer()
                 
-                Text("question: \(currentQuestionIndex + 1) / \(game.questions.count)")
+                Text(presenter.viewModel.progress)
                     .foregroundColor(Color.Shared.secondary)
                     .padding(.trailing)
                     .fontWeight(.bold)
             }
         }
         .frame(height: proxy.safeAreaInsets.top)
+    }
+}
+
+// MARK: - Questions
+
+private extension GameView {
+    
+    @ViewBuilder func makeQuestion(proxy: GeometryProxy) -> some View {
+        
+        let width = proxy.frame(in: .local).width
+        
+        let currentQuestion = presenter.viewModel.currentQuestion
+        let answers = presenter.viewModel.answers
+        
+        ScrollView {
+            
+            VStack {
+                
+                Text(currentQuestion.category)
+                    .lineLimit(1)
+                    .font(.Shared.answerTitle)
+                    .minimumScaleFactor(0.3)
+                    .foregroundColor(.white)
+                    .animation(.default, value: currentQuestion.category)
+                    .padding(.bottom)
+                
+                Text(currentQuestion.text)
+                    .font(.Shared.question)
+                    .minimumScaleFactor(0.3)
+                    .foregroundColor(.white)
+                    .animation(.default, value: currentQuestion.text)
+                    .padding(.bottom)
+                    
+                ForEach(answers, id: \.id) { answer in
+                    
+                    Text(answer.text)
+                        .font(.Shared.answer)
+                        .foregroundColor(.white)
+                        .padding()
+                        .frame(width: width * 0.9)
+                        .background {
+                            
+                            RoundedRectangle(cornerRadius: 20)
+                                .foregroundColor(Color.Shared.secondary)
+                        }
+                        .onTapGesture {
+                            
+                            presenter.handleAnswer(for: answer.id)
+                        }
+                        .animation(.default, value: answer.text)
+                }
+            }
+            .padding()
+        }
     }
 }
 
@@ -109,238 +166,126 @@ private extension GameView {
                 
                 Spacer()
                 
-                ForEach(game.players.indices, id: \.self) { index in
+                ForEach(presenter.viewModel.players.indices, id: \.self) { index in
                     
-                    let player = game.players[index]
-                    let isCurrentlyPlaying = currentPlayerIndex == index
+                    let player = presenter.viewModel.players[index]
                     
                     PlayerBubbleView(
                         name: player.name,
                         score: player.score,
-                        highlited: isCurrentlyPlaying,
+                        highlited: player.isPlaying,
                         canBeDeleted: false,
                         onTap: { }
                     )
                     .frame(height: frame.height / 7.5)
-                    .animation(.default, value: isCurrentlyPlaying)
+                    .animation(.default, value: player.isPlaying)
                 }
             }
             .frame(height: frame.height / 7)
-        }
-    }
-}
-
-// MARK: - Questions
-
-private extension GameView {
-    
-    @ViewBuilder func makeQuestion() -> some View {
-        
-        let columns = [
-            GridItem(.flexible())
-        ]
-        
-        let currentQuestion = game.questions[currentQuestionIndex]
-        
-        ScrollView {
-            
-            VStack {
-                
-                Text(currentQuestion.category)
-                    .font(.Shared.answerTitle)
-                    .foregroundColor(.white)
-                    .animation(.default, value: currentQuestion.category)
-                    .padding(.bottom)
-                
-                Text(currentQuestion.text)
-                    .font(.Shared.question)
-                    .foregroundColor(.white)
-                    .animation(.default, value: currentQuestion.text)
-                    .padding(.bottom)
-                
-                LazyVGrid(columns: columns) {
-                    
-                    ForEach(currentQuestion.answers) { answer in
-                        
-                        RoundedRectangle(cornerRadius: 10)
-                            .foregroundColor(.clear)
-                            .frame(height: 55)
-                            .overlay {
-                                
-                                Text(answer.value)
-                                    .font(.Shared.answer)
-                                    .foregroundColor(.white)
-                            }
-                            .background(content: {
-                                
-                                RoundedRectangle(cornerRadius: 10)
-                                    .foregroundColor(Color.Shared.secondary)
-                            })
-                            .onTapGesture {
-                                
-                                handleAnswer(for: answer)
-                            }
-                            .animation(.default, value: answer.value)
-                    }
-                }
-            }
-            .padding()
+            .padding([.leading, .trailing])
         }
     }
 }
 
 // MARK: - End game
 
-private extension GameView {
-    
-    @ViewBuilder func makeGameEnd() -> some View {
-        
-        ZStack {
-            
-            Color.Shared.background
-                .ignoresSafeArea()
-            
-                
-            VStack {
-                
-                HStack {
-                    
-                    Button {
-                        
-                        dismissCurrentView()
-                    } label: {
-                        
-                        Label("", systemImage: "return")
-                            .foregroundColor(.black)
-                            .fontWeight(.bold)
-                    }
-                    .padding(.leading)
-                    
-                    Spacer()
-                }
-                
-                ScrollView {
-                    
-                    VStack {
-                        
-                        makePlayersScore()
-                        
-                        makeQuestionAnswers()
-                    }
-                }
-            }
-        }
-    }
-    
-    @ViewBuilder func makePlayersScore() -> some View {
-        
-        let playerScores = getSortedPlayers()
-        
-        LazyVGrid(columns: [GridItem(.flexible())]) {
-            
-            ForEach(playerScores) { playerScore in
-                
-                HStack {
-                    
-                    Text(playerScore.name)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .padding(.leading)
-                        .padding(.bottom)
-                    
-                    Spacer()
-                    
-                    Text("\(playerScore.score)")
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .padding(.trailing)
-                }
-            }
-        }
-        .padding()
-    }
-    
-    @ViewBuilder func makeQuestionAnswers() -> some View {
-        
-        let questions = game.questions
-        
-        LazyVGrid(columns: [GridItem(.flexible())]) {
-            
-            ForEach(questions, id: \.text) { question in
-                
-                VStack {
-                    
-                    Text(question.text)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .padding(.bottom)
-                    
-                    ForEach(question.answers) { answer in
-                        
-                        if answer.isCorrect {
-                            
-                            Text("Correct answer: " + answer.value)
-                                .fontWeight(.bold)
-                                .foregroundColor(Color.Shared.secondary)
-                        }
-                    }
-                }
-                .padding(.bottom)
-            }
-        }
-        .padding()
-    }
-}
-
-// MARK: - Helper methods
-
-private extension GameView {
-    
-    func getSortedPlayers() -> [Player] {
-        
-        let players = game.players
-        return players.sorted { $0.score > $1.score }
-    }
-    
-    func handleAnswer(for answer: Question.Answer) {
-        
-        let currentPlayerIndex = self.currentPlayerIndex
-        let currentPlayer = game.players[currentPlayerIndex]
-        
-        let currentQuestionIndex = self.currentQuestionIndex
-        let currentQuestion = game.questions[currentQuestionIndex]
-        
-        let maxPlayerIndex = game.players.count - 1
-        let maxQuestionIndex = game.questions.count - 1
-        
-        currentAnswers[currentPlayer.id] = answer.id
-        
-        let isLastPlayerToAnswer = currentPlayerIndex == maxPlayerIndex
-        let isLastQuestionToAnswer = currentQuestionIndex == maxQuestionIndex
-        
-        switch isLastPlayerToAnswer {
-        case true:
-            
-            self.currentPlayerIndex = 0
-            
-            for player in game.players {
-                
-                let answerId = currentAnswers[player.id]!
-                let isCorrectAnswer = currentQuestion.answers.first(where: { $0.id == answerId })!.isCorrect
-                player.score += isCorrectAnswer ? 100 : 0
-            }
-            
-            switch isLastQuestionToAnswer {
-            case true:
-                
-                self.gameEnded = true
-            case false:
-                
-                self.currentQuestionIndex += 1
-            }
-        case false:
-            
-            self.currentPlayerIndex += 1
-        }
-    }
-}
+//private extension GameView {
+//
+//    @ViewBuilder func makeGameEnd() -> some View {
+//
+//        ZStack {
+//
+//            Color.Shared.background
+//                .ignoresSafeArea()
+//
+//
+//            VStack {
+//
+//                HStack {
+//
+//                    Button {
+//
+//                        dismissCurrentView()
+//                    } label: {
+//
+//                        Label("", systemImage: "return")
+//                            .foregroundColor(.black)
+//                            .fontWeight(.bold)
+//                    }
+//                    .padding(.leading)
+//
+//                    Spacer()
+//                }
+//
+//                ScrollView {
+//
+//                    VStack {
+//
+//                        makePlayersScore()
+//
+//                        makeQuestionAnswers()
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//    @ViewBuilder func makePlayersScore() -> some View {
+//
+//        let playerScores = presenter.sortPlayersByScore()
+//
+//        LazyVGrid(columns: [GridItem(.flexible())]) {
+//
+//            ForEach(playerScores) { playerScore in
+//
+//                HStack {
+//
+//                    Text(playerScore.name)
+//                        .fontWeight(.bold)
+//                        .foregroundColor(.white)
+//                        .padding(.leading)
+//                        .padding(.bottom)
+//
+//                    Spacer()
+//
+//                    Text("\(playerScore.score)")
+//                        .fontWeight(.bold)
+//                        .foregroundColor(.white)
+//                        .padding(.trailing)
+//                }
+//            }
+//        }
+//        .padding()
+//    }
+//
+//    @ViewBuilder func makeQuestionAnswers() -> some View {
+//
+//        let questions = presenter.viewModel.game.questions
+//
+//        LazyVGrid(columns: [GridItem(.flexible())]) {
+//
+//            ForEach(questions, id: \.text) { question in
+//
+//                VStack {
+//
+//                    Text(question.text)
+//                        .fontWeight(.bold)
+//                        .foregroundColor(.white)
+//                        .padding(.bottom)
+//
+//                    ForEach(question.answers) { answer in
+//
+//                        if answer.isCorrect {
+//
+//                            Text("Correct answer: " + answer.value)
+//                                .fontWeight(.bold)
+//                                .foregroundColor(Color.Shared.secondary)
+//                        }
+//                    }
+//                }
+//                .padding(.bottom)
+//            }
+//        }
+//        .padding()
+//    }
+//}

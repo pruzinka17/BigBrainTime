@@ -95,7 +95,7 @@ extension GameSetupPresenter {
     func fetchCategories() async {
         
         DispatchQueue.main.async { [weak self] in
-         
+            
             self?.viewModel.isLoadingCategories = true
         }
 
@@ -116,19 +116,13 @@ extension GameSetupPresenter {
             return
         }
         
-        DispatchQueue.main.async { [weak self] in
-            
-            self?.viewModel.playerNames.append((self?.viewModel.currentPlayerName)!)
-            self?.viewModel.currentPlayerName = ""
-        }
+        viewModel.playerNames.append((viewModel.currentPlayerName))
+        viewModel.currentPlayerName = ""
     }
     
     func removePlayer(name: String) {
-        
-        DispatchQueue.main.async { [weak self] in
             
-            self?.viewModel.playerNames.removeAll { $0 == name }
-        }
+        viewModel.playerNames.removeAll { $0 == name }
     }
     
     //MARK: - Category functions
@@ -137,17 +131,12 @@ extension GameSetupPresenter {
         
         switch isCategorySelected(value) {
         case true:
-            
-            DispatchQueue.main.async { [weak self] in
                 
-                self?.viewModel.selectedCategories.removeAll(where: { $0 == value } )
-            }
+            viewModel.selectedCategories.removeAll(where: { $0 == value } )
+            
         case false:
             
-            DispatchQueue.main.async { [weak self] in
-                
-                self?.viewModel.selectedCategories.append(value)
-            }
+            viewModel.selectedCategories.append(value)
         }
     }
     
@@ -165,10 +154,7 @@ extension GameSetupPresenter {
     
     func selectDificulty(difficulty: Difficulties) {
         
-        DispatchQueue.main.async { [weak self] in
-            
-            self?.viewModel.selectedDifficulty = difficulty
-        }
+        viewModel.selectedDifficulty = difficulty
     }
     
     //MARK: - generate game

@@ -15,6 +15,8 @@
 		F7022527298D363200C1A931 /* QuestionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7022526298D363200C1A931 /* QuestionModel.swift */; };
 		F74324C42981635B00C61C25 /* MainButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74324C32981635B00C61C25 /* MainButtonStyle.swift */; };
 		F74324C72981639F00C61C25 /* MainMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74324C62981639F00C61C25 /* MainMenuView.swift */; };
+		F746D8082994202400BC248C /* EndGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F746D8072994202400BC248C /* EndGameView.swift */; };
+		F76A1C1C29929114005EB3AF /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76A1C1B29929114005EB3AF /* GameViewModel.swift */; };
 		F7802EAA2981811100B8B2D8 /* GameSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7802EA92981811100B8B2D8 /* GameSetupView.swift */; };
 		F78B0246298C0B930002BA56 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78B0245298C0B930002BA56 /* Colors.swift */; };
 		F79359A4298113AA00F5EFDD /* BigBrainTimeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79359A3298113AA00F5EFDD /* BigBrainTimeApp.swift */; };
@@ -40,6 +42,8 @@
 		F7022526298D363200C1A931 /* QuestionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionModel.swift; sourceTree = "<group>"; };
 		F74324C32981635B00C61C25 /* MainButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainButtonStyle.swift; sourceTree = "<group>"; };
 		F74324C62981639F00C61C25 /* MainMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuView.swift; sourceTree = "<group>"; };
+		F746D8072994202400BC248C /* EndGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndGameView.swift; sourceTree = "<group>"; };
+		F76A1C1B29929114005EB3AF /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
 		F7802EA92981811100B8B2D8 /* GameSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSetupView.swift; sourceTree = "<group>"; };
 		F78B0245298C0B930002BA56 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		F79359A0298113AA00F5EFDD /* BigBrainTime.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BigBrainTime.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -118,6 +122,14 @@
 				F74324C62981639F00C61C25 /* MainMenuView.swift */,
 			);
 			path = MainMenu;
+			sourceTree = "<group>";
+		};
+		F746D8062994200900BC248C /* EndGameView */ = {
+			isa = PBXGroup;
+			children = (
+				F746D8072994202400BC248C /* EndGameView.swift */,
+			);
+			path = EndGameView;
 			sourceTree = "<group>";
 		};
 		F7802EA8298180FF00B8B2D8 /* GameSetup */ = {
@@ -211,8 +223,10 @@
 		F7A5485D2982B68B00BBDC89 /* Game */ = {
 			isa = PBXGroup;
 			children = (
+				F746D8062994200900BC248C /* EndGameView */,
 				F7A5485E2982B6A400BBDC89 /* GameView.swift */,
 				F79618812992334400F90B7A /* GameViewPresenter.swift */,
+				F76A1C1B29929114005EB3AF /* GameViewModel.swift */,
 			);
 			path = Game;
 			sourceTree = "<group>";
@@ -305,10 +319,12 @@
 			files = (
 				F7A54853298287D000BBDC89 /* GameModel.swift in Sources */,
 				F74324C72981639F00C61C25 /* MainMenuView.swift in Sources */,
+				F746D8082994202400BC248C /* EndGameView.swift in Sources */,
 				F7E704B3299144010062CB44 /* GameSetupPresenter.swift in Sources */,
 				F79359B62981182200F5EFDD /* Fonts.swift in Sources */,
 				F7022520298D339000C1A931 /* CategoryModel.swift in Sources */,
 				F7F091FE29894BD500850422 /* PlayerBubbleView.swift in Sources */,
+				F76A1C1C29929114005EB3AF /* GameViewModel.swift in Sources */,
 				F79618822992334400F90B7A /* GameViewPresenter.swift in Sources */,
 				F79359A6298113AA00F5EFDD /* ContentView.swift in Sources */,
 				F702251E298D2EE600C1A931 /* GameService.swift in Sources */,
