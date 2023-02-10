@@ -10,5 +10,5 @@ import Foundation
 struct EndGameContext {
     
     let game: Game
-    let playerAnswers: [String: String]
+    let playerAnswers: [String: [String]]
 }

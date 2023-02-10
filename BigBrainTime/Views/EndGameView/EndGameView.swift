@@ -13,8 +13,6 @@ struct EndGameView: View {
     @Environment(\.dismiss) var dismissCurrentView
     
     @ObservedObject var presenter: EndGameViewPresenter
-    
-    private let context: EndGameContext
 
     private let onFinish: () -> Void
 
@@ -23,8 +21,7 @@ struct EndGameView: View {
         onFinish: @escaping () -> Void
     ) {
 
-        self.presenter = EndGameViewPresenter()
-        self.context = context
+        self.presenter = EndGameViewPresenter(context: context)
         self.onFinish = onFinish
     }
 
@@ -51,7 +48,7 @@ struct EndGameView: View {
         .interactiveDismissDisabled()
         .onAppear {
             
-            presenter.Present(context: context)
+            presenter.present()
         }
     }
 }

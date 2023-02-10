@@ -136,8 +136,8 @@
 			children = (
 				F746D8072994202400BC248C /* EndGameView.swift */,
 				F77EFC5529963AB60005BB7E /* EndGamePresenter.swift */,
-				F75C7F3629967C7A00FA7E9E /* EndGameContext.swift */,
 				F77EFC5329963AAA0005BB7E /* EndGameViewModel.swift */,
+				F75C7F3629967C7A00FA7E9E /* EndGameContext.swift */,
 			);
 			path = EndGameView;
 			sourceTree = "<group>";

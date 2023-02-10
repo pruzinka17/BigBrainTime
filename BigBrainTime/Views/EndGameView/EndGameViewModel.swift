@@ -9,9 +9,8 @@ import Foundation
 
 struct EndGameViewModel {
     
-    let averageScore: Int
-    let maxScore: Int
-    
+    var averageScore: Int
+    var maxScore: Int
     var players: [Player]
     
     struct Player {
@@ -19,7 +18,6 @@ struct EndGameViewModel {
         let name: String
         let score: Int
         let questions: [Question]
-        var answersShown: Bool
         
         struct Question {
             

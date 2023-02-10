@@ -9,66 +9,79 @@ import Foundation
 
 final class EndGameViewPresenter: ObservableObject {
     
+    private let context: EndGameContext
+    
     @Published var viewModel: EndGameViewModel
     
-    init() {
+    init(context: EndGameContext) {
         
+        self.context = context
         self.viewModel = EndGameViewModel(averageScore: 0, maxScore: 0, players: [])
     }
 }
 
 extension EndGameViewPresenter {
     
-    func Present(context: EndGameContext) {
+    func present() {
         
-        generateView(context: context)
+        updateView()
     }
 }
 
 private extension EndGameViewPresenter {
     
-    func generateView(context: EndGameContext) {
+    func updateView() {
         
         let game = context.game
         let playerAnswers = context.playerAnswers
         
-        let playerScores = context.game.players.map( { $0.score } )
+        let playerScores = game.players.map( { $0.score } )
         let totalScore = playerScores.reduce(0, +)
-        let average = totalScore / context.game.players.count
-        let maxScore = context.game.questions.count * 100
+        let averageScore = totalScore / game.players.count
+        let maxScore = game.questions.count * 100
         
-        var model: EndGameViewModel = EndGameViewModel(averageScore: average, maxScore: maxScore, players: [])
+        var players: [EndGameViewModel.Player] = []
         
-        for player in game.players {
+        for (playerId, anwswerIds) in playerAnswers {
             
-            var questions: [EndGameViewModel.Player.Question] = []
-            
-            for question in game.questions {
-                
-                let correctAnswer = question.answers.first(where: { $0.isCorrect == true })?.value
-                let text = question.text
-                var playerAnswer = ""
-                
-                for (key, value) in playerAnswers {
-                    
-                    if key == player.id {
-                        
-                        for answer in question.answers {
-                            
-                            if value == answer.id {
-                                
-                                playerAnswer = answer.value
-                            }
-                        }
-                    }
-                }
-                
-                questions.append(EndGameViewModel.Player.Question(text: text, correct: correctAnswer ?? "null", value: playerAnswer))
+            guard
+                let gamePlayer = game.players.first(where: { $0.id == playerId })
+            else {
+                continue
             }
             
-            model.players.append(EndGameViewModel.Player(name: player.name, score: player.score, questions: questions, answersShown: false))
+            var playerQuestions: [EndGameViewModel.Player.Question] = []
+            
+            for answerId in anwswerIds {
+                
+                let question = game.questions.first(where: { question in
+                    
+                    return question.answers.contains(where: { $0.id == answerId })
+                })!
+                
+                let correctAnswer = question.answers.first(where: { $0.isCorrect })!
+                let playerAnswer = question.answers.first(where: { $0.id == answerId })!
+                
+                let playerQuestion = EndGameViewModel.Player.Question(
+                    text: question.text,
+                    correct: correctAnswer.value,
+                    value: playerAnswer.value
+                )
+                
+                playerQuestions.append(playerQuestion)
+            }
+            
+            let player = EndGameViewModel.Player(
+                name: gamePlayer.name,
+                score: gamePlayer.score,
+                questions: playerQuestions
+            )
+            
+            players.append(player)
         }
         
-        viewModel = model
+        viewModel.maxScore = maxScore
+        viewModel.averageScore = averageScore
+        viewModel.players = players
     }
 }

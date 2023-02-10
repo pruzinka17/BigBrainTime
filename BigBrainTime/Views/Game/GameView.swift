@@ -45,11 +45,8 @@ struct GameView: View {
         }
         .sheet(isPresented: $presenter.viewModel.showEndGame, content: {
             
-            EndGameView(
+            EndGameView(context: presenter.generateEndGameContext()) {
                 
-                context: EndGameContext(game: presenter.game, playerAnswers: presenter.playersAnswers)
-            ) {
-
                 dismissCurrentView()
             }
         })

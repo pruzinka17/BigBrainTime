@@ -9,11 +9,12 @@ import Foundation
 
 final class GamePresenter: ObservableObject {
     
-    let game: Game
+    private let game: Game
     
     private var currentQuestionIndex: Int
     private var currentPlayerIndex: Int
-    var playersAnswers: [String: String]
+    private var curentPlayerAnswers: [String: String]
+    private var playerAnswers: [String: [String]]
     private var gameFinished: Bool
     
     @Published var viewModel: GameViewModel
@@ -23,7 +24,8 @@ final class GamePresenter: ObservableObject {
         self.game = game
         self.currentQuestionIndex = 0
         self.currentPlayerIndex = 0
-        self.playersAnswers = [:]
+        self.curentPlayerAnswers = [:]
+        self.playerAnswers = [:]
         self.gameFinished = false
         
         self.viewModel = GameViewModel(
@@ -49,6 +51,12 @@ extension GamePresenter {
         updateView()
     }
     
+    func generateEndGameContext() -> EndGameContext {
+        
+        let context: EndGameContext = EndGameContext(game: game, playerAnswers: playerAnswers)
+        return context
+    }
+    
     func handleAnswer(for answerId: String) {
         
         let currentPlayer = game.players[currentPlayerIndex]
@@ -57,7 +65,12 @@ extension GamePresenter {
         let maxPlayerIndex = game.players.count - 1
         let maxQuestionIndex = game.questions.count - 1
         
-        playersAnswers[currentPlayer.id] = answerId
+        curentPlayerAnswers[currentPlayer.id] = answerId
+        
+        // keeping history of all answers for end game
+        var answers = playerAnswers[currentPlayer.id] ?? []
+        answers.append(answerId)
+        playerAnswers[currentPlayer.id] = answers
         
         let isLastPlayerToAnswer = currentPlayerIndex == maxPlayerIndex
         let isLastQuestionToAnswer = currentQuestionIndex == maxQuestionIndex
@@ -70,7 +83,7 @@ extension GamePresenter {
             for player in game.players {
                 
                 guard
-                    let answerId = playersAnswers[player.id],
+                    let answerId = curentPlayerAnswers[player.id],
                     let playerAnswer = currentQuestion.answers.first(where: { $0.id == answerId })
                 else {
                     continue
