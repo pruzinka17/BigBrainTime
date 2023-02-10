@@ -11,7 +11,7 @@ struct GameView: View {
     
     @Environment(\.dismiss) var dismissCurrentView
     
-    @ObservedObject var presenter: GameViewPresenter
+    @ObservedObject var presenter: GamePresenter
     
     @Namespace var namespace
     
@@ -19,7 +19,7 @@ struct GameView: View {
         game: Game
     ) {
 
-        self.presenter = GameViewPresenter(game: game)
+        self.presenter = GamePresenter(game: game)
     }
     
     var body: some View {
@@ -45,14 +45,13 @@ struct GameView: View {
         }
         .sheet(isPresented: $presenter.viewModel.showEndGame, content: {
             
-//            GameEndView(
-//                players: presenter.getPlayers(),
-//                questions: presenter.game.questions,
-//                answers: presenter.playersAnswers
-//            ) {
-//
-//                dismissCurrentView()
-//            }
+            EndGameView(
+                
+                context: EndGameContext(game: presenter.game, playerAnswers: presenter.playersAnswers)
+            ) {
+
+                dismissCurrentView()
+            }
         })
         .onAppear {
             

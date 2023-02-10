@@ -16,7 +16,10 @@
 		F74324C42981635B00C61C25 /* MainButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74324C32981635B00C61C25 /* MainButtonStyle.swift */; };
 		F74324C72981639F00C61C25 /* MainMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74324C62981639F00C61C25 /* MainMenuView.swift */; };
 		F746D8082994202400BC248C /* EndGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F746D8072994202400BC248C /* EndGameView.swift */; };
+		F75C7F3729967C7A00FA7E9E /* EndGameContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75C7F3629967C7A00FA7E9E /* EndGameContext.swift */; };
 		F76A1C1C29929114005EB3AF /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76A1C1B29929114005EB3AF /* GameViewModel.swift */; };
+		F77EFC5429963AAA0005BB7E /* EndGameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77EFC5329963AAA0005BB7E /* EndGameViewModel.swift */; };
+		F77EFC5629963AB60005BB7E /* EndGamePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77EFC5529963AB60005BB7E /* EndGamePresenter.swift */; };
 		F7802EAA2981811100B8B2D8 /* GameSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7802EA92981811100B8B2D8 /* GameSetupView.swift */; };
 		F78B0246298C0B930002BA56 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78B0245298C0B930002BA56 /* Colors.swift */; };
 		F79359A4298113AA00F5EFDD /* BigBrainTimeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79359A3298113AA00F5EFDD /* BigBrainTimeApp.swift */; };
@@ -24,7 +27,7 @@
 		F79359A8298113AB00F5EFDD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F79359A7298113AB00F5EFDD /* Assets.xcassets */; };
 		F79359AB298113AB00F5EFDD /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F79359AA298113AB00F5EFDD /* Preview Assets.xcassets */; };
 		F79359B62981182200F5EFDD /* Fonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79359B52981182200F5EFDD /* Fonts.swift */; };
-		F79618822992334400F90B7A /* GameViewPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79618812992334400F90B7A /* GameViewPresenter.swift */; };
+		F79618822992334400F90B7A /* GamePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79618812992334400F90B7A /* GamePresenter.swift */; };
 		F7A54853298287D000BBDC89 /* GameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A54852298287D000BBDC89 /* GameModel.swift */; };
 		F7A5485F2982B6A400BBDC89 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A5485E2982B6A400BBDC89 /* GameView.swift */; };
 		F7AE029629840F82000F4643 /* AddPlayerTextFieldStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE029529840F82000F4643 /* AddPlayerTextFieldStyle.swift */; };
@@ -43,7 +46,10 @@
 		F74324C32981635B00C61C25 /* MainButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainButtonStyle.swift; sourceTree = "<group>"; };
 		F74324C62981639F00C61C25 /* MainMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuView.swift; sourceTree = "<group>"; };
 		F746D8072994202400BC248C /* EndGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndGameView.swift; sourceTree = "<group>"; };
+		F75C7F3629967C7A00FA7E9E /* EndGameContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndGameContext.swift; sourceTree = "<group>"; };
 		F76A1C1B29929114005EB3AF /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
+		F77EFC5329963AAA0005BB7E /* EndGameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndGameViewModel.swift; sourceTree = "<group>"; };
+		F77EFC5529963AB60005BB7E /* EndGamePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndGamePresenter.swift; sourceTree = "<group>"; };
 		F7802EA92981811100B8B2D8 /* GameSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSetupView.swift; sourceTree = "<group>"; };
 		F78B0245298C0B930002BA56 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		F79359A0298113AA00F5EFDD /* BigBrainTime.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BigBrainTime.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -52,7 +58,7 @@
 		F79359A7298113AB00F5EFDD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F79359AA298113AB00F5EFDD /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		F79359B52981182200F5EFDD /* Fonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fonts.swift; sourceTree = "<group>"; };
-		F79618812992334400F90B7A /* GameViewPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewPresenter.swift; sourceTree = "<group>"; };
+		F79618812992334400F90B7A /* GamePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamePresenter.swift; sourceTree = "<group>"; };
 		F7A54852298287D000BBDC89 /* GameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameModel.swift; sourceTree = "<group>"; };
 		F7A5485E2982B6A400BBDC89 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		F7AE029529840F82000F4643 /* AddPlayerTextFieldStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPlayerTextFieldStyle.swift; sourceTree = "<group>"; };
@@ -111,6 +117,7 @@
 				F74324C9298163C600C61C25 /* MainMenu */,
 				F7802EA8298180FF00B8B2D8 /* GameSetup */,
 				F7A5485D2982B68B00BBDC89 /* Game */,
+				F746D8062994200900BC248C /* EndGameView */,
 				F7F091FF2989527200850422 /* PlayerBubble */,
 			);
 			path = Views;
@@ -128,6 +135,9 @@
 			isa = PBXGroup;
 			children = (
 				F746D8072994202400BC248C /* EndGameView.swift */,
+				F77EFC5529963AB60005BB7E /* EndGamePresenter.swift */,
+				F75C7F3629967C7A00FA7E9E /* EndGameContext.swift */,
+				F77EFC5329963AAA0005BB7E /* EndGameViewModel.swift */,
 			);
 			path = EndGameView;
 			sourceTree = "<group>";
@@ -223,9 +233,8 @@
 		F7A5485D2982B68B00BBDC89 /* Game */ = {
 			isa = PBXGroup;
 			children = (
-				F746D8062994200900BC248C /* EndGameView */,
 				F7A5485E2982B6A400BBDC89 /* GameView.swift */,
-				F79618812992334400F90B7A /* GameViewPresenter.swift */,
+				F79618812992334400F90B7A /* GamePresenter.swift */,
 				F76A1C1B29929114005EB3AF /* GameViewModel.swift */,
 			);
 			path = Game;
@@ -325,7 +334,7 @@
 				F7022520298D339000C1A931 /* CategoryModel.swift in Sources */,
 				F7F091FE29894BD500850422 /* PlayerBubbleView.swift in Sources */,
 				F76A1C1C29929114005EB3AF /* GameViewModel.swift in Sources */,
-				F79618822992334400F90B7A /* GameViewPresenter.swift in Sources */,
+				F79618822992334400F90B7A /* GamePresenter.swift in Sources */,
 				F79359A6298113AA00F5EFDD /* ContentView.swift in Sources */,
 				F702251E298D2EE600C1A931 /* GameService.swift in Sources */,
 				F7AE029629840F82000F4643 /* AddPlayerTextFieldStyle.swift in Sources */,
@@ -333,9 +342,12 @@
 				F7022525298D360800C1A931 /* PlayerModel.swift in Sources */,
 				F78B0246298C0B930002BA56 /* Colors.swift in Sources */,
 				F702251A298D2B0C00C1A931 /* NetworkService.swift in Sources */,
+				F75C7F3729967C7A00FA7E9E /* EndGameContext.swift in Sources */,
 				F79359A4298113AA00F5EFDD /* BigBrainTimeApp.swift in Sources */,
+				F77EFC5629963AB60005BB7E /* EndGamePresenter.swift in Sources */,
 				F7802EAA2981811100B8B2D8 /* GameSetupView.swift in Sources */,
 				F7022523298D33CB00C1A931 /* CategoriesDTO.swift in Sources */,
+				F77EFC5429963AAA0005BB7E /* EndGameViewModel.swift in Sources */,
 				F7D7CA77298E8CDE004F707E /* QuestionsDTO.swift in Sources */,
 				F74324C42981635B00C61C25 /* MainButtonStyle.swift in Sources */,
 				F7022527298D363200C1A931 /* QuestionModel.swift in Sources */,

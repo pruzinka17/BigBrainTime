@@ -7,13 +7,13 @@
 
 import Foundation
 
-final class GameViewPresenter: ObservableObject {
+final class GamePresenter: ObservableObject {
     
-    private let game: Game
+    let game: Game
     
     private var currentQuestionIndex: Int
     private var currentPlayerIndex: Int
-    private var playersAnswers: [String: String]
+    var playersAnswers: [String: String]
     private var gameFinished: Bool
     
     @Published var viewModel: GameViewModel
@@ -38,7 +38,7 @@ final class GameViewPresenter: ObservableObject {
 
 // MARK: - Public interface
 
-extension GameViewPresenter {
+extension GamePresenter {
     
     func present() {
         
@@ -98,7 +98,7 @@ extension GameViewPresenter {
 
 // MARK: - Update view methods
 
-private extension GameViewPresenter {
+private extension GamePresenter {
     
     func updateView() {
         
