@@ -16,7 +16,7 @@ final class EndGameViewPresenter: ObservableObject {
     init(context: EndGameContext) {
         
         self.context = context
-        self.viewModel = EndGameViewModel(averageScore: 0, maxScore: 0, players: [])
+        self.viewModel = EndGameViewModel(averageScore: 0, maxScore: 0, players: [], gameQuestions: [])
     }
 }
 
@@ -59,16 +59,26 @@ private extension EndGameViewPresenter {
                     return question.answers.contains(where: { $0.id == answerId })
                 })!
                 
-                let correctAnswer = question.answers.first(where: { $0.isCorrect })!
-                let playerAnswer = question.answers.first(where: { $0.id == answerId })!
+                guard
+                    let correctAnswer = question.answers.first(where: { $0.isCorrect })
+                else { continue }
                 
-                let playerQuestion = EndGameViewModel.Player.Question(
-                    text: question.text,
-                    correct: correctAnswer.value,
-                    value: playerAnswer.value
-                )
+                guard
+                    let playerAnswer = question.answers.first(where: { $0.id == answerId })
+                else { continue }
                 
-                playerQuestions.append(playerQuestion)
+                if playerAnswer.value != correctAnswer.value {
+                    
+                    let playerQuestion = EndGameViewModel.Player.Question(
+                        text: question.text,
+                        correct: correctAnswer.value,
+                        value: playerAnswer.value
+                    )
+                    
+                    playerQuestions.append(playerQuestion)
+                } else {
+                    continue
+                }
             }
             
             let player = EndGameViewModel.Player(
@@ -83,5 +93,6 @@ private extension EndGameViewPresenter {
         viewModel.maxScore = maxScore
         viewModel.averageScore = averageScore
         viewModel.players = players
+        viewModel.gameQuestions = game.questions
     }
 }

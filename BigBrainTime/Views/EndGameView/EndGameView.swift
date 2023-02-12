@@ -29,20 +29,31 @@ struct EndGameView: View {
         
         ZStack {
             
-            Color.white
+            Color.Shared.background
                 .ignoresSafeArea()
-            
-            GeometryReader { proxy in
                 
-                VStack {
+            GeometryReader { proxy in
+             
+                TabView {
                     
-                    makePlayers()
+                    VStack {
+                        
+                        ScrollView(showsIndicators: false) {
+                            
+                            makePlayers()
+                        }
+                        
+                        Spacer()
+                        
+                        makeCharts(proxy: proxy)
+                    }
+                    .padding()
                     
-                    Spacer()
+                    //TODO: - add next tab with all questions
                     
-                    makeCharts(proxy: proxy)
+                    makeAllQuestions()
                 }
-                .padding()
+                .tabViewStyle(.page)
             }
         }
         .interactiveDismissDisabled()
@@ -54,6 +65,59 @@ struct EndGameView: View {
 }
 
 private extension EndGameView {
+    
+    //MARK: - AllQuestions
+    
+    @ViewBuilder func makeAllQuestions() -> some View {
+        
+        let questions = presenter.viewModel.gameQuestions
+            
+        VStack {
+            
+            ScrollView(showsIndicators: false) {
+                
+                ForEach(questions, id: \.text) { question in
+                    
+                    VStack {
+                        
+                        HStack {
+                            
+                            Text(question.category)
+                                .foregroundColor(.white)
+                                .font(.system(size: 18, weight: .bold, design: .rounded))
+                            
+                            Spacer()
+                        }
+
+                        HStack {
+                            
+                            Text(question.text)
+                                .foregroundColor(.white)
+                                .font(.system(size: 14, weight: .regular, design: .rounded))
+
+                            Spacer()
+                        }
+                        
+                        let columns = [
+                            GridItem(.flexible()),
+                            GridItem(.flexible())
+                        ]
+                        
+                        LazyVGrid(columns: columns) {
+                            
+                            ForEach(question.answers) { answer in
+                                
+                                Text(answer.value)
+                                    .foregroundColor(answer.isCorrect ? .green : .red)
+                            }
+                        }
+                        .padding(.top)
+                    }
+                }
+            }
+        }
+        .padding()
+    }
     
     //MARK: - Players
     
@@ -87,10 +151,12 @@ private extension EndGameView {
                     HStack {
                         
                         Text(player.name)
+                            .foregroundColor(.white)
                         
                         Spacer()
                         
                         Text(String(player.score))
+                            .foregroundColor(.white)
                     }
                 }
                 .foregroundColor(.black)
@@ -102,23 +168,35 @@ private extension EndGameView {
     
     @ViewBuilder func makeCharts(proxy: GeometryProxy) -> some View {
         
-        VStack {
+        TabView {
             
-            Chart(presenter.viewModel.players, id: \.name) {
+            VStack {
                 
-                BarMark(x: .value("Player", $0.name), y: .value("Score", $0.score ))
-                    .foregroundStyle(by: .value("Player", $0.name))
-                    .opacity(0.3)
-                
-                RuleMark(y: .value("Average", presenter.viewModel.averageScore))
-                    .lineStyle(StrokeStyle(lineWidth: 3))
-                    .annotation(position: .top, alignment: .leading) {
-                        
-                        Text("Average \(presenter.viewModel.averageScore, format: .number)")
-                    }
+                Chart(presenter.viewModel.players, id: \.name) {
+                    
+                    BarMark(x: .value("Player", $0.name), y: .value("Score", $0.score ))
+                        .foregroundStyle(by: .value("Player", $0.name))
+                        .opacity(0.3)
+                    
+                    RuleMark(y: .value("Average", presenter.viewModel.averageScore))
+                        .lineStyle(StrokeStyle(lineWidth: 3))
+                        .annotation(position: .top, alignment: .leading) {
+                            
+                            Text("Average \(presenter.viewModel.averageScore, format: .number)")
+                                .foregroundColor(.white)
+                        }
+                    
+                }
+                //.chartYScale(domain: 0...presenter.viewModel.maxScore)
+                .frame(height: proxy.frame(in: .local).height * 0.3)
             }
-            .chartYScale(domain: 0...presenter.viewModel.maxScore)
-            .frame(height: proxy.frame(in: .local).height * 0.3)
+            
+            //TODO: - add more graphs
+            
+            VStack {
+                
+            }
         }
+        .tabViewStyle(.page)
     }
 }

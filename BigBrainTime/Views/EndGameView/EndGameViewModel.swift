@@ -12,6 +12,7 @@ struct EndGameViewModel {
     var averageScore: Int
     var maxScore: Int
     var players: [Player]
+    var gameQuestions: [Question]
     
     struct Player {
         
