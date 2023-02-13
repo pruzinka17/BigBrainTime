@@ -49,8 +49,6 @@ struct EndGameView: View {
                     }
                     .padding()
                     
-                    //TODO: - add next tab with all questions
-                    
                     makeAllQuestions()
                 }
                 .tabViewStyle(.page)
@@ -187,16 +185,20 @@ private extension EndGameView {
                         }
                     
                 }
-                //.chartYScale(domain: 0...presenter.viewModel.maxScore)
+                .tint(.black)
                 .frame(height: proxy.frame(in: .local).height * 0.3)
             }
             
-            //TODO: - add more graphs
-            
             VStack {
                 
+                Chart(presenter.viewModel.players, id: \.name) {
+                    
+                    BarMark(x: .value("Player", $0.name), y: .value("Questions Right", $0.score / 100))
+                        .foregroundStyle(by: .value("Player", $0.name))
+                }
+                .frame(height: proxy.frame(in: .local).height * 0.3)
             }
         }
-        .tabViewStyle(.page)
+        .tabViewStyle(.page(indexDisplayMode: .never))
     }
 }

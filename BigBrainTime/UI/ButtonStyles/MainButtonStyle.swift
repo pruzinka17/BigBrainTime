@@ -10,12 +10,13 @@ import SwiftUI
 struct MainButtonStyle: ButtonStyle {
     
     let width: CGFloat
+    let height: CGFloat
     
     func makeBody(configuration: Configuration) -> some View {
         
         configuration.label
             .font(.Shared.newGameButton)
-            .frame(width: width)
+            .frame(width: width, height: height)
             .foregroundColor(.white)
             .padding()
             .background {

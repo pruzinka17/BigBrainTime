@@ -106,7 +106,7 @@ private extension GameView {
         let answers = presenter.viewModel.answers
         
         ScrollView {
-            
+                
             VStack {
                 
                 Text(currentQuestion.category)
@@ -143,6 +143,7 @@ private extension GameView {
                         .animation(.default, value: answer.text)
                 }
             }
+            .animation(.default, value: currentQuestion.text)
             .padding()
         }
     }
@@ -182,106 +183,3 @@ private extension GameView {
         }
     }
 }
-
-// MARK: - End game
-
-//private extension GameView {
-//
-//    @ViewBuilder func makeGameEnd() -> some View {
-//
-//        ZStack {
-//
-//            Color.Shared.background
-//                .ignoresSafeArea()
-//
-//
-//            VStack {
-//
-//                HStack {
-//
-//                    Button {
-//
-//                        dismissCurrentView()
-//                    } label: {
-//
-//                        Label("", systemImage: "return")
-//                            .foregroundColor(.black)
-//                            .fontWeight(.bold)
-//                    }
-//                    .padding(.leading)
-//
-//                    Spacer()
-//                }
-//
-//                ScrollView {
-//
-//                    VStack {
-//
-//                        makePlayersScore()
-//
-//                        makeQuestionAnswers()
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    @ViewBuilder func makePlayersScore() -> some View {
-//
-//        let playerScores = presenter.sortPlayersByScore()
-//
-//        LazyVGrid(columns: [GridItem(.flexible())]) {
-//
-//            ForEach(playerScores) { playerScore in
-//
-//                HStack {
-//
-//                    Text(playerScore.name)
-//                        .fontWeight(.bold)
-//                        .foregroundColor(.white)
-//                        .padding(.leading)
-//                        .padding(.bottom)
-//
-//                    Spacer()
-//
-//                    Text("\(playerScore.score)")
-//                        .fontWeight(.bold)
-//                        .foregroundColor(.white)
-//                        .padding(.trailing)
-//                }
-//            }
-//        }
-//        .padding()
-//    }
-//
-//    @ViewBuilder func makeQuestionAnswers() -> some View {
-//
-//        let questions = presenter.viewModel.game.questions
-//
-//        LazyVGrid(columns: [GridItem(.flexible())]) {
-//
-//            ForEach(questions, id: \.text) { question in
-//
-//                VStack {
-//
-//                    Text(question.text)
-//                        .fontWeight(.bold)
-//                        .foregroundColor(.white)
-//                        .padding(.bottom)
-//
-//                    ForEach(question.answers) { answer in
-//
-//                        if answer.isCorrect {
-//
-//                            Text("Correct answer: " + answer.value)
-//                                .fontWeight(.bold)
-//                                .foregroundColor(Color.Shared.secondary)
-//                        }
-//                    }
-//                }
-//                .padding(.bottom)
-//            }
-//        }
-//        .padding()
-//    }
-//}

@@ -354,6 +354,7 @@ private extension GameSetupView {
         
         let disabled = presenter.viewModel.playerNames.count < 1 || presenter.viewModel.selectedCategories.isEmpty
         let buttonWidth = proxy.frame(in: .local).width / Constants.startGameDivider
+        let buttonHeight: CGFloat = proxy.frame(in: .local).height * 0.04
         
         Button {
             
@@ -376,7 +377,7 @@ private extension GameSetupView {
                     .progressViewStyle(CircularProgressViewStyle(tint: Color.black))
             }
         }
-        .buttonStyle(MainButtonStyle(width: buttonWidth))
+        .buttonStyle(MainButtonStyle(width: buttonWidth, height: buttonHeight))
         .disabled(disabled)
         .opacity(disabled ? 0.3 : 1)
         .animation(.default, value: disabled)

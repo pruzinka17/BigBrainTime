@@ -69,7 +69,8 @@ private extension MainMenuView {
     
     @ViewBuilder func makeButton(proxy: GeometryProxy) -> some View {
         
-        let buttonWidth: CGFloat = proxy.frame(in: .local).width / 2
+        let buttonWidth: CGFloat = proxy.frame(in: .local).width * 0.5
+        let buttonHeight: CGFloat = proxy.frame(in: .local).height * 0.04
         
         HStack {
             
@@ -79,7 +80,7 @@ private extension MainMenuView {
                 
                 isPresentingGameSetup = true
             }
-            .buttonStyle(MainButtonStyle(width: buttonWidth))
+            .buttonStyle(MainButtonStyle(width: buttonWidth, height: buttonHeight))
             
             Spacer()
         }
