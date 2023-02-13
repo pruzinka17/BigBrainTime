@@ -40,18 +40,19 @@ struct EndGameView: View {
                         
                         ScrollView(showsIndicators: false) {
                             
-                            makePlayers()
+                            makePlayers(proxy: proxy)
                         }
+                        .padding()
                         
                         Spacer()
                         
                         makeCharts(proxy: proxy)
+                            .padding()
                     }
-                    .padding()
                     
                     makeAllQuestions()
                 }
-                .tabViewStyle(.page)
+                .tabViewStyle(.page(indexDisplayMode: .never))
             }
         }
         .interactiveDismissDisabled()
@@ -134,9 +135,41 @@ private extension EndGameView {
     
     //MARK: - Players
     
-    @ViewBuilder func makePlayers() -> some View {
+    @ViewBuilder func makePlayerAnswers(question: EndGameViewModel.Player.Question, width: CGFloat) -> some View{
+        
+        VStack(spacing: 10) {
+            
+            HStack {
+                
+                Text(question.text)
+                    .foregroundColor(.black)
+                
+                Spacer()
+            }
+            
+            Text("Your answer: " + question.value)
+                .minimumScaleFactor(0.6)
+                .lineLimit(4)
+                .foregroundColor(.red)
+            
+            Text("Correct Answer: " + question.correct)
+                .minimumScaleFactor(0.6)
+                .lineLimit(4)
+                .foregroundColor(Color.Shared.correctQuestion)
+        }
+        .padding()
+        .frame(width: width)
+        .background {
+            
+            RoundedRectangle(cornerRadius: 20)
+                .foregroundColor(Color.Shared.secondary)
+        }
+    }
+    
+    @ViewBuilder func makePlayers(proxy: GeometryProxy) -> some View {
         
         let players =  presenter.viewModel.players.sorted(by: { $0.score > $1.score } )
+        let itemWidth = proxy.frame(in: .local).width * 0.9
         
         VStack {
             
@@ -146,18 +179,14 @@ private extension EndGameView {
                     
                     ScrollView(showsIndicators: false) {
                         
-                        VStack {
+                        VStack(spacing: 15) {
                             
-                            ForEach(player.questions, id: \.text) { question in
+                            ForEach(player.questions, id: \.text ) { question in
                                 
-                                Text(question.text)
-                                    .foregroundColor(.black)
-                                Text(question.value)
-                                    .foregroundColor(.blue)
-                                Text(question.correct)
-                                    .foregroundColor(.red)
+                                makePlayerAnswers(question: question, width: itemWidth)
                             }
                         }
+                        .padding(.top)
                     }
                 } label: {
                     
@@ -165,11 +194,13 @@ private extension EndGameView {
                         
                         Text(player.name)
                             .foregroundColor(.white)
+                            .fontWeight(.bold)
                         
                         Spacer()
                         
                         Text(String(player.score))
                             .foregroundColor(.white)
+                            .fontWeight(.bold)
                     }
                 }
                 .foregroundColor(.black)
@@ -181,39 +212,52 @@ private extension EndGameView {
     
     @ViewBuilder func makeCharts(proxy: GeometryProxy) -> some View {
         
-        TabView {
+        VStack {
             
-            VStack {
+            TabView {
                 
-                Chart(presenter.viewModel.players, id: \.name) {
+                VStack {
                     
-                    BarMark(x: .value("Player", $0.name), y: .value("Score", $0.score ))
-                        .foregroundStyle(by: .value("Player", $0.name))
-                        .opacity(0.3)
-                    
-                    RuleMark(y: .value("Average", presenter.viewModel.averageScore))
-                        .lineStyle(StrokeStyle(lineWidth: 3))
-                        .annotation(position: .top, alignment: .leading) {
-                            
-                            Text("Average \(presenter.viewModel.averageScore, format: .number)")
-                                .foregroundColor(.white)
-                        }
-                    
+                    Chart(presenter.viewModel.players, id: \.name) {
+                        
+                        BarMark(x: .value("Player", $0.name), y: .value("Score", $0.score ))
+                            .foregroundStyle(by: .value("Player", $0.name))
+                            .opacity(0.3)
+                        
+                        RuleMark(y: .value("Average", presenter.viewModel.averageScore))
+                            .lineStyle(StrokeStyle(lineWidth: 3))
+                            .annotation(position: .top, alignment: .leading) {
+                                
+                                Text("Average \(presenter.viewModel.averageScore, format: .number)")
+                                    .foregroundColor(.white)
+                            }
+                        
+                    }
                 }
-                .tint(.black)
-                .frame(height: proxy.frame(in: .local).height * 0.3)
-            }
-            
-            VStack {
+                .padding()
+                .background {
+                    
+                    RoundedRectangle(cornerRadius: 20)
+                        .foregroundColor(Color.Shared.background2)
+                }
                 
-                Chart(presenter.viewModel.players, id: \.name) {
+                VStack {
                     
-                    BarMark(x: .value("Player", $0.name), y: .value("Questions Right", $0.score / 100))
-                        .foregroundStyle(by: .value("Player", $0.name))
+                    Chart(presenter.viewModel.players, id: \.name) {
+                        
+                        BarMark(x: .value("Player", $0.name), y: .value("Questions Right", $0.score / 100))
+                            .foregroundStyle(by: .value("Player", $0.name))
+                    }
                 }
-                .frame(height: proxy.frame(in: .local).height * 0.3)
+                .padding()
+                .background {
+                    
+                    RoundedRectangle(cornerRadius: 20)
+                        .foregroundColor(Color.Shared.background2)
+                }
             }
+            .tabViewStyle(.page(indexDisplayMode: .never))
         }
-        .tabViewStyle(.page(indexDisplayMode: .never))
+        .frame(height: proxy.frame(in: .local).height * 0.3)
     }
 }
