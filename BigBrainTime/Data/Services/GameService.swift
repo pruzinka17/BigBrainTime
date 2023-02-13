@@ -86,7 +86,7 @@ final class GameService {
                 let question = Question(
                     text: questionDto.question,
                     category: questionDto.category,
-                    answers: answers
+                    answers: answers.shuffled()
                 )
                 
                 questions.append(question)

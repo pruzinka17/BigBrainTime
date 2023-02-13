@@ -66,6 +66,55 @@ private extension EndGameView {
     
     //MARK: - AllQuestions
     
+    @ViewBuilder func makeQuestionTab(question: Question) -> some View {
+        
+        VStack {
+            
+            HStack {
+                
+                Text(question.category)
+                    .foregroundColor(.white)
+                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                
+                Spacer()
+            }
+
+            HStack {
+                
+                Text(question.text)
+                    .foregroundColor(.white)
+                    .font(.system(size: 14, weight: .regular, design: .rounded))
+
+                Spacer()
+            }
+            
+            let columns = [
+                GridItem(.flexible()),
+                GridItem(.flexible())
+            ]
+            
+            LazyVGrid(columns: columns, spacing: 20) {
+                
+                ForEach(question.answers) { answer in
+                    
+                    Text(answer.value)
+                        .minimumScaleFactor(0.7)
+                        .lineLimit(5)
+                        .multilineTextAlignment(.leading)
+                        .fontWeight(.bold)
+                        .foregroundColor(answer.isCorrect ? .green : .red)
+                }
+            }
+            .padding(.top)
+        }
+        .padding()
+        .background {
+            
+            RoundedRectangle(cornerRadius: 20)
+                .foregroundColor(Color.Shared.secondary)
+        }
+    }
+    
     @ViewBuilder func makeAllQuestions() -> some View {
         
         let questions = presenter.viewModel.gameQuestions
@@ -76,41 +125,7 @@ private extension EndGameView {
                 
                 ForEach(questions, id: \.text) { question in
                     
-                    VStack {
-                        
-                        HStack {
-                            
-                            Text(question.category)
-                                .foregroundColor(.white)
-                                .font(.system(size: 18, weight: .bold, design: .rounded))
-                            
-                            Spacer()
-                        }
-
-                        HStack {
-                            
-                            Text(question.text)
-                                .foregroundColor(.white)
-                                .font(.system(size: 14, weight: .regular, design: .rounded))
-
-                            Spacer()
-                        }
-                        
-                        let columns = [
-                            GridItem(.flexible()),
-                            GridItem(.flexible())
-                        ]
-                        
-                        LazyVGrid(columns: columns) {
-                            
-                            ForEach(question.answers) { answer in
-                                
-                                Text(answer.value)
-                                    .foregroundColor(answer.isCorrect ? .green : .red)
-                            }
-                        }
-                        .padding(.top)
-                    }
+                    makeQuestionTab(question: question)
                 }
             }
         }

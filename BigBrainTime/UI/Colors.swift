@@ -16,5 +16,6 @@ extension Color {
         static let playerBubble = Color("color-playerbubble")
         static let secondary = Color("color-secondary")
         static let title = Color("color-title")
+        static let correctQuestion = Color("color-qustionCorrect")
     }
 }
