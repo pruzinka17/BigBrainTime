@@ -151,39 +151,6 @@ private extension EndGameView {
     
     //MARK: - Players
     
-    @ViewBuilder func makePlayerAnswers(question: EndGameViewModel.Player.Question, width: CGFloat) -> some View{
-        
-        VStack(spacing: 10) {
-            
-            HStack {
-                
-                Text(question.text)
-                    .foregroundColor(.white)
-                
-                Spacer()
-            }
-            
-            Text(Constants.playerAnswerText + question.value)
-                .minimumScaleFactor(0.6)
-                .lineLimit(4)
-                .foregroundColor(.red)
-                .fontWeight(.bold)
-            
-            Text(Constants.correctAnswerText + question.correct)
-                .minimumScaleFactor(0.6)
-                .lineLimit(4)
-                .foregroundColor(Color.Shared.correctQuestion)
-                .fontWeight(.bold)
-        }
-        .padding()
-        .frame(width: width)
-        .background {
-            
-            RoundedRectangle(cornerRadius: 20)
-                .foregroundColor(Color.Shared.secondary)
-        }
-    }
-    
     @ViewBuilder func makePlayers(proxy: GeometryProxy) -> some View {
         
         let players =  presenter.viewModel.players.sorted(by: { $0.score > $1.score } )
@@ -227,6 +194,39 @@ private extension EndGameView {
         .padding()
     }
     
+    @ViewBuilder func makePlayerAnswers(question: EndGameViewModel.Player.Question, width: CGFloat) -> some View{
+        
+        VStack(spacing: 10) {
+            
+            HStack {
+                
+                Text(question.text)
+                    .foregroundColor(.white)
+                
+                Spacer()
+            }
+            
+            Text(Constants.playerAnswerText + question.value)
+                .minimumScaleFactor(0.6)
+                .lineLimit(4)
+                .foregroundColor(.red)
+                .fontWeight(.bold)
+            
+            Text(Constants.correctAnswerText + question.correct)
+                .minimumScaleFactor(0.6)
+                .lineLimit(4)
+                .foregroundColor(Color.Shared.correctQuestion)
+                .fontWeight(.bold)
+        }
+        .padding()
+        .frame(width: width)
+        .background {
+            
+            RoundedRectangle(cornerRadius: 20)
+                .foregroundColor(Color.Shared.secondary)
+        }
+    }
+    
     //MARK: - Charts
     
     @ViewBuilder func makeCharts(proxy: GeometryProxy) -> some View {
@@ -236,6 +236,8 @@ private extension EndGameView {
             TabView {
                 
                 VStack {
+                    
+                    //MARK: - scoreChart
                     
                     Chart(presenter.viewModel.players, id: \.name) {
                         
@@ -262,6 +264,8 @@ private extension EndGameView {
                 }
                 
                 VStack {
+                    
+                    //MARK: - correctAnswersChart
                     
                     Chart(presenter.viewModel.players, id: \.name) {
                         

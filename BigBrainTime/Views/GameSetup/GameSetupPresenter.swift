@@ -7,32 +7,6 @@
 
 import Foundation
 
-struct GameSetupViewModel {
-    
-    // MARK: - Player
-    
-    var currentPlayerName: String
-    var playerNames: [String]
-    
-    // MARK: - Categories
-    
-    var isLoadingCategories: Bool
-    var categories: [Category]
-    var selectedCategories: [String]
-    
-    // MARK: - Questions
-    
-    var numberOfQuestions: Double
-    
-    // MARK: - Difficulty
-    
-    var selectedDifficulty: Difficulties
-    
-    // MARK: - Game
-    
-    var isGeneratingGame: Bool
-}
-
 final class GameSetupPresenter: ObservableObject {
     
     private let gameService: GameService
@@ -166,6 +140,22 @@ extension GameSetupPresenter {
             categories: viewModel.selectedCategories,
             difficulty: viewModel.selectedDifficulty,
             limit: Int(viewModel.numberOfQuestions)
+        )
+    }
+    
+    //MARK: - clear Settings
+    
+    func clearSettings() {
+        
+        self.viewModel = GameSetupViewModel(
+            currentPlayerName: "",
+            playerNames: [],
+            isLoadingCategories: false,
+            categories: viewModel.categories,
+            selectedCategories: [],
+            numberOfQuestions: Question.questionLimit.lowerBound,
+            selectedDifficulty: .medium,
+            isGeneratingGame: false
         )
     }
 }

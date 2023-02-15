@@ -42,6 +42,8 @@ final class GamePresenter: ObservableObject {
 
 extension GamePresenter {
     
+    //MARK: - present
+    
     func present() {
         
         guard !gameFinished else {
@@ -51,11 +53,15 @@ extension GamePresenter {
         updateView()
     }
     
+    //MARK: - generateEndGameContext
+    
     func generateEndGameContext() -> EndGameContext {
         
         let context: EndGameContext = EndGameContext(game: game, playerAnswers: playerAnswers)
         return context
     }
+    
+    //MARK: - handlePlayerAnswer
     
     func handleAnswer(for answerId: String) {
         

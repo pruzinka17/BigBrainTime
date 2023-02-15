@@ -362,6 +362,7 @@ private extension GameSetupView {
                 
                 await presenter.generateGame()
                 if presenter.game != nil {
+                    presenter.clearSettings()
                     isPresentingGame = true
                 }
             }
