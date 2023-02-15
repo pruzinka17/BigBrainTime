@@ -35,6 +35,10 @@ struct GameSetupView: View {
             
             GeometryReader { proxy in
                 
+                let frame = proxy.frame(in: .local)
+                let frameWidth = frame.width
+                let frameHeight = frame.height
+                
                 VStack {
                     
                     makeTopBar(proxy: proxy)
@@ -43,14 +47,14 @@ struct GameSetupView: View {
                         
                         makePlayers(proxy: proxy)
                         
-                        makeCategories(proxy: proxy)
+                        makeCategories(frameHeight: frameHeight)
                         
-                        makeQuestions(proxy: proxy)
+                        makeQuestions()
                         
                         makeDifficulties()
                             .padding(.bottom)
                         
-                        makeStartGame(proxy: proxy)
+                        makeStartGame(frameWidth: frameWidth, frameHeight: frameHeight)
                     }
                 }
             }
@@ -113,7 +117,7 @@ private extension GameSetupView {
         
         let frame = proxy.frame(in: .local)
         let height = frame.height + proxy.safeAreaInsets.top + proxy.safeAreaInsets.bottom
-        let textFieldSize = CGSize(width: frame.width * 0.75, height: height * 0.05)
+        let textFieldSize = CGSize(width: frame.width * Constants.textFieldWidthMultiplier, height: height * Constants.textFieldHeightMultiplier)
         
         VStack {
             
@@ -135,7 +139,7 @@ private extension GameSetupView {
                     .font(.Shared.noPlayers)
                     .opacity(0.3)
                     .padding()
-                    .frame(height: height / Constants.playersFrameDivider)
+                    .frame(height: height * Constants.playerBubbleHeightMultiplier)
                 
             case false:
                 
@@ -162,7 +166,7 @@ private extension GameSetupView {
                     .padding()
                     .animation(.default, value: presenter.viewModel.playerNames)
                 }
-                .frame(height: height / Constants.playersFrameDivider)
+                .frame(height: height * Constants.playerBubbleHeightMultiplier)
             }
             
             TextField(Constants.placeholderTextField, text: $presenter.viewModel.currentPlayerName)
@@ -182,9 +186,7 @@ private extension GameSetupView {
 
 private extension GameSetupView {
     
-    @ViewBuilder func makeCategories(proxy: GeometryProxy) -> some View {
-        
-        let frameHeight = proxy.frame(in: .local).height
+    @ViewBuilder func makeCategories(frameHeight: CGFloat) -> some View {
         
         VStack {
             
@@ -222,7 +224,7 @@ private extension GameSetupView {
                     }
                 }
             }
-            .frame(height: frameHeight * 0.1)
+            .frame(height: frameHeight * Constants.caterogyHeightMultiplier)
         }
     }
     
@@ -260,9 +262,7 @@ private extension GameSetupView {
 
 private extension GameSetupView {
     
-    @ViewBuilder func makeQuestions(proxy: GeometryProxy) -> some View {
-        
-        let frame = proxy.frame(in: .local)
+    @ViewBuilder func makeQuestions() -> some View {
         
         VStack {
             
@@ -286,7 +286,6 @@ private extension GameSetupView {
                     .foregroundColor(.white)
                     .fontWeight(.bold)
                     .padding(.leading)
-                    .frame(width: frame.width * 0.2)
             }
             .padding()
         }
@@ -350,11 +349,11 @@ private extension GameSetupView {
 
 private extension GameSetupView {
     
-    @ViewBuilder func makeStartGame(proxy: GeometryProxy) -> some View {
+    @ViewBuilder func makeStartGame(frameWidth: CGFloat, frameHeight: CGFloat) -> some View {
         
         let disabled = presenter.viewModel.playerNames.count < 1 || presenter.viewModel.selectedCategories.isEmpty
-        let buttonWidth = proxy.frame(in: .local).width / Constants.startGameDivider
-        let buttonHeight: CGFloat = proxy.frame(in: .local).height * 0.04
+        let buttonWidth = frameWidth * Constants.startGameButtonWidthMultiplier
+        let buttonHeight = frameHeight * Constants.startGameButtonHeightMultiplier
         
         Button {
             
@@ -401,8 +400,15 @@ private extension GameSetupView {
         static let spacingDivider: CGFloat = 40
         static let itemSizeDivider: CGFloat = 14
         
-        static let playersFrameDivider: CGFloat = 7
-        static let startGameDivider: CGFloat = 2
+        static let playerBubbleHeightMultiplier: CGFloat = 0.14
+        
+        static let caterogyHeightMultiplier: CGFloat = 0.1
+        
+        static let startGameButtonHeightMultiplier: CGFloat = 0.04
+        static let startGameButtonWidthMultiplier: CGFloat = 0.5
+        
+        static let textFieldHeightMultiplier: CGFloat = 0.05
+        static let textFieldWidthMultiplier: CGFloat = 0.75
         
         enum Sections {
             

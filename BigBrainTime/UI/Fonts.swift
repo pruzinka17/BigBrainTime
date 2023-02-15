@@ -27,5 +27,8 @@ extension Font {
         static let question = Font.system(size: 23, weight: .thin, design: .rounded)
         static let answer = Font.system(size: 23, weight: .semibold, design: .rounded)
         static let answerTitle = Font.system(size: 18, weight: .bold, design: .rounded)
+        
+        static let allQuestionsCategory = Font.system(size: 18, weight: .bold, design: .rounded)
+        static let allQuestionsText = Font.system(size: 14, weight: .regular, design: .rounded)
     }
 }

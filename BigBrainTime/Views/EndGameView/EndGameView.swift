@@ -33,6 +33,10 @@ struct EndGameView: View {
                 .ignoresSafeArea()
                 
             GeometryReader { proxy in
+                
+                let frame = proxy.frame(in: .local)
+                let frameWidth = frame.width
+                let frameHeight = frame.height
              
                 TabView {
                     
@@ -40,11 +44,10 @@ struct EndGameView: View {
                         
                         ScrollView(showsIndicators: false) {
                             
-                            makePlayers(proxy: proxy)
+                            makePlayers(frameWidth: frameWidth)
                         }
                         
-                        makeCharts(proxy: proxy)
-                            .padding()
+                        makeCharts(frameWidth: frameWidth, frameHeight: frameHeight)
                         
                         makeReturnButton(proxy: proxy)
                     }
@@ -90,8 +93,8 @@ private extension EndGameView {
             HStack {
                 
                 Text(question.category)
+                    .font(.Shared.allQuestionsCategory)
                     .foregroundColor(.white)
-                    .font(.system(size: 18, weight: .bold, design: .rounded))
                 
                 Spacer()
             }
@@ -99,8 +102,8 @@ private extension EndGameView {
             HStack {
                 
                 Text(question.text)
+                    .font(.Shared.allQuestionsText)
                     .foregroundColor(.white)
-                    .font(.system(size: 14, weight: .regular, design: .rounded))
 
                 Spacer()
             }
@@ -115,8 +118,8 @@ private extension EndGameView {
                 ForEach(question.answers) { answer in
                     
                     Text(answer.value)
-                        .minimumScaleFactor(0.7)
-                        .lineLimit(5)
+                        .minimumScaleFactor(Constants.allQuestionsAnswersMinimulScaleFactor)
+                        .lineLimit(Constants.allQuestionsAnswersLineLimit)
                         .multilineTextAlignment(.leading)
                         .fontWeight(.bold)
                         .foregroundColor(answer.isCorrect ? Color.Shared.correctQuestion : .red)
@@ -151,14 +154,16 @@ private extension EndGameView {
     
     //MARK: - Players
     
-    @ViewBuilder func makePlayers(proxy: GeometryProxy) -> some View {
+    @ViewBuilder func makePlayers(frameWidth: CGFloat) -> some View {
         
         let players =  presenter.viewModel.players.sorted(by: { $0.score > $1.score } )
-        let itemWidth = proxy.frame(in: .local).width * 0.9
+        let itemWidth = frameWidth * Constants.playerAnswersWidthMultiplier
         
         VStack {
             
-            ForEach(players, id: \.name) { player in
+            ForEach(players.indices, id: \.self) { index in
+                
+                let player = players[index]
                 
                 DisclosureGroup {
                     
@@ -176,6 +181,10 @@ private extension EndGameView {
                 } label: {
                     
                     HStack {
+                        
+                        Text("#\(index + 1)")
+                            .foregroundColor(.Shared.secondary)
+                            .fontWeight(.bold)
                         
                         Text(player.name)
                             .foregroundColor(.white)
@@ -207,14 +216,14 @@ private extension EndGameView {
             }
             
             Text(Constants.playerAnswerText + question.value)
-                .minimumScaleFactor(0.6)
-                .lineLimit(4)
+                .minimumScaleFactor(Constants.playerAnswersMinimumScaleFactor)
+                .lineLimit(Constants.playerAnswersLineLimit)
                 .foregroundColor(.red)
                 .fontWeight(.bold)
             
             Text(Constants.correctAnswerText + question.correct)
-                .minimumScaleFactor(0.6)
-                .lineLimit(4)
+                .minimumScaleFactor(Constants.playerAnswersMinimumScaleFactor)
+                .lineLimit(Constants.playerAnswersLineLimit)
                 .foregroundColor(Color.Shared.correctQuestion)
                 .fontWeight(.bold)
         }
@@ -229,7 +238,9 @@ private extension EndGameView {
     
     //MARK: - Charts
     
-    @ViewBuilder func makeCharts(proxy: GeometryProxy) -> some View {
+    @ViewBuilder func makeCharts(frameWidth: CGFloat, frameHeight: CGFloat) -> some View {
+        
+        let chartsHeight = frameHeight * Constants.chatstHeightMultiplier
         
         VStack {
             
@@ -254,13 +265,13 @@ private extension EndGameView {
                             }
                         
                     }
-                    .chartYScale(domain: 0...presenter.viewModel.gameQuestions.count * 100)
+                    .chartYScale(domain: 0...presenter.viewModel.gameQuestions.count * Constants.score)
                 }
                 .padding()
+                .frame(width: frameWidth * Constants.chartWidthMultiplier)
                 .background {
                     
-                    RoundedRectangle(cornerRadius: 20)
-                        .foregroundColor(Color.white)
+                    Color.white
                 }
                 
                 VStack {
@@ -274,15 +285,15 @@ private extension EndGameView {
                     }
                 }
                 .padding()
+                .frame(width: frameWidth * Constants.chartWidthMultiplier)
                 .background {
                     
-                    RoundedRectangle(cornerRadius: 15)
-                        .foregroundColor(Color.white)
+                    Color.white
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
         }
-        .frame(height: proxy.frame(in: .local).height * 0.3)
+        .frame(height: chartsHeight)
     }
 }
 
@@ -294,5 +305,18 @@ private extension EndGameView {
         static let correctAnswerText: String = "Correct Answer: "
         
         static let returnButtonTitle: String = "Return To Game Setup"
+        
+        static let score: Int = 100
+        
+        static let chartWidthMultiplier: CGFloat = 0.9
+        
+        static let playerAnswersMinimumScaleFactor: CGFloat = 0.6
+        static let playerAnswersLineLimit: Int = 4
+        
+        static let allQuestionsAnswersMinimulScaleFactor: CGFloat = 0.7
+        static let allQuestionsAnswersLineLimit: Int = 5
+        
+        static let playerAnswersWidthMultiplier: CGFloat = 0.9
+        static let chatstHeightMultiplier: CGFloat = 0.3
     }
 }

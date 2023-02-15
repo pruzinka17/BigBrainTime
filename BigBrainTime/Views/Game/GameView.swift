@@ -114,17 +114,18 @@ private extension GameView {
                 Text(currentQuestion.category)
                     .lineLimit(1)
                     .font(.Shared.answerTitle)
-                    .minimumScaleFactor(0.3)
+                    .minimumScaleFactor(Constants.questionTextMinumumScaleFactor)
                     .foregroundColor(.white)
                     .animation(.default, value: currentQuestion.category)
                     .padding(.bottom)
                 
                 Text(currentQuestion.text)
                     .font(.Shared.question)
-                    .minimumScaleFactor(0.3)
+                    .minimumScaleFactor(Constants.questionTextMinumumScaleFactor)
                     .foregroundColor(.white)
                     .animation(.default, value: currentQuestion.text)
                     .padding(.bottom)
+                    .frame(width: frameWidth * Constants.questionsWidthMultiplier)
                     
                 ForEach(answers, id: \.id) { answer in
                     
@@ -132,7 +133,7 @@ private extension GameView {
                         .font(.Shared.answer)
                         .foregroundColor(.white)
                         .padding()
-                        .frame(width: frameWidth * 0.9)
+                        .frame(width: frameWidth * Constants.questionsWidthMultiplier)
                         .background {
                             
                             RoundedRectangle(cornerRadius: 20)
@@ -174,12 +175,24 @@ private extension GameView {
                         canBeDeleted: false,
                         onTap: { }
                     )
-                    .frame(height: frameHeight / 7.5)
+                    .frame(height: frameHeight * Constants.PlayerBubbleHeightMultiplier)
                     .animation(.default, value: player.isPlaying)
                 }
             }
-            .frame(height: frameHeight / 7)
+            .frame(height: frameHeight * Constants.playerFrameHeightMultiplier)
             .padding([.leading, .trailing])
         }
+    }
+}
+
+private extension GameView {
+    
+    enum Constants {
+        
+        static let questionsWidthMultiplier: CGFloat = 0.9
+        static let PlayerBubbleHeightMultiplier: CGFloat = 0.13
+        static let playerFrameHeightMultiplier: CGFloat = 0.15
+        
+        static let questionTextMinumumScaleFactor: CGFloat = 0.3
     }
 }
