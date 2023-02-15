@@ -42,12 +42,11 @@ struct EndGameView: View {
                             
                             makePlayers(proxy: proxy)
                         }
-                        .padding()
-                        
-                        Spacer()
                         
                         makeCharts(proxy: proxy)
                             .padding()
+                        
+                        makeReturnButton(proxy: proxy)
                     }
                     
                     makeAllQuestions()
@@ -64,6 +63,23 @@ struct EndGameView: View {
 }
 
 private extension EndGameView {
+    
+    //MARK: - Return to game setup button
+    
+    @ViewBuilder func makeReturnButton(proxy: GeometryProxy) -> some View {
+        
+        let itemWidth = proxy.frame(in: .local).width * 0.5
+        let itemHeight = proxy.frame(in: .local).height * 0.04
+        
+        Button(Constants.returnButtonTitle) {
+            
+            onFinish()
+            dismissCurrentView()
+        }
+        .buttonStyle(MainButtonStyle(width: itemWidth, height: itemHeight))
+        .fontWeight(.bold)
+        .foregroundColor(Color.white)
+    }
     
     //MARK: - AllQuestions
     
@@ -103,7 +119,7 @@ private extension EndGameView {
                         .lineLimit(5)
                         .multilineTextAlignment(.leading)
                         .fontWeight(.bold)
-                        .foregroundColor(answer.isCorrect ? .green : .red)
+                        .foregroundColor(answer.isCorrect ? Color.Shared.correctQuestion : .red)
                 }
             }
             .padding(.top)
@@ -142,20 +158,22 @@ private extension EndGameView {
             HStack {
                 
                 Text(question.text)
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Spacer()
             }
             
-            Text("Your answer: " + question.value)
+            Text(Constants.playerAnswerText + question.value)
                 .minimumScaleFactor(0.6)
                 .lineLimit(4)
                 .foregroundColor(.red)
+                .fontWeight(.bold)
             
-            Text("Correct Answer: " + question.correct)
+            Text(Constants.correctAnswerText + question.correct)
                 .minimumScaleFactor(0.6)
                 .lineLimit(4)
                 .foregroundColor(Color.Shared.correctQuestion)
+                .fontWeight(.bold)
         }
         .padding()
         .frame(width: width)
@@ -206,6 +224,7 @@ private extension EndGameView {
                 .foregroundColor(.black)
             }
         }
+        .padding()
     }
     
     //MARK: - Charts
@@ -229,16 +248,17 @@ private extension EndGameView {
                             .annotation(position: .top, alignment: .leading) {
                                 
                                 Text("Average \(presenter.viewModel.averageScore, format: .number)")
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.black)
                             }
                         
                     }
+                    .chartYScale(domain: 0...presenter.viewModel.gameQuestions.count * 100)
                 }
                 .padding()
                 .background {
                     
                     RoundedRectangle(cornerRadius: 20)
-                        .foregroundColor(Color.Shared.background2)
+                        .foregroundColor(Color.white)
                 }
                 
                 VStack {
@@ -252,12 +272,23 @@ private extension EndGameView {
                 .padding()
                 .background {
                     
-                    RoundedRectangle(cornerRadius: 20)
-                        .foregroundColor(Color.Shared.background2)
+                    RoundedRectangle(cornerRadius: 15)
+                        .foregroundColor(Color.white)
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
         }
         .frame(height: proxy.frame(in: .local).height * 0.3)
+    }
+}
+
+private extension EndGameView {
+    
+    enum Constants {
+        
+        static let playerAnswerText: String = "Your answer: "
+        static let correctAnswerText: String = "Correct Answer: "
+        
+        static let returnButtonTitle: String = "Return To Game Setup"
     }
 }

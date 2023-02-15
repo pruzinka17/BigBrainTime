@@ -17,5 +17,6 @@ extension Color {
         static let secondary = Color("color-secondary")
         static let title = Color("color-title")
         static let correctQuestion = Color("color-questionCorrect")
+        static let chartBackground = Color("color-chartBackground")
     }
 }

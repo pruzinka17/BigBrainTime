@@ -16,6 +16,7 @@ struct MainButtonStyle: ButtonStyle {
         
         configuration.label
             .font(.Shared.newGameButton)
+            .minimumScaleFactor(0.6)
             .frame(width: width, height: height)
             .foregroundColor(.white)
             .padding()

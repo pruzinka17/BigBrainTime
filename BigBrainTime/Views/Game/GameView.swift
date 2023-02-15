@@ -31,15 +31,19 @@ struct GameView: View {
             
             GeometryReader { proxy in
                 
+                let frame = proxy.frame(in: .local)
+                let frameWidth = frame.width
+                let frameHeight = frame.height
+                
                 VStack {
                     
                     makeTopBar(proxy: proxy)
                     
-                    makeQuestion(proxy: proxy)
+                    makeQuestion(frameWidth: frameWidth)
                     
                     Spacer()
                     
-                    makePlayerList(proxy: proxy)
+                    makePlayerList(frameHeight: frameHeight)
                 }
             }
         }
@@ -98,9 +102,7 @@ private extension GameView {
 
 private extension GameView {
     
-    @ViewBuilder func makeQuestion(proxy: GeometryProxy) -> some View {
-        
-        let width = proxy.frame(in: .local).width
+    @ViewBuilder func makeQuestion(frameWidth: CGFloat) -> some View {
         
         let currentQuestion = presenter.viewModel.currentQuestion
         let answers = presenter.viewModel.answers
@@ -130,7 +132,7 @@ private extension GameView {
                         .font(.Shared.answer)
                         .foregroundColor(.white)
                         .padding()
-                        .frame(width: width * 0.9)
+                        .frame(width: frameWidth * 0.9)
                         .background {
                             
                             RoundedRectangle(cornerRadius: 20)
@@ -153,9 +155,7 @@ private extension GameView {
 
 private extension GameView {
     
-    @ViewBuilder func makePlayerList(proxy: GeometryProxy) -> some View {
-        
-        let frame = proxy.frame(in: .local)
+    @ViewBuilder func makePlayerList(frameHeight: CGFloat) -> some View {
         
         ScrollView(.horizontal, showsIndicators: false) {
             
@@ -174,11 +174,11 @@ private extension GameView {
                         canBeDeleted: false,
                         onTap: { }
                     )
-                    .frame(height: frame.height / 7.5)
+                    .frame(height: frameHeight / 7.5)
                     .animation(.default, value: player.isPlaying)
                 }
             }
-            .frame(height: frame.height / 7)
+            .frame(height: frameHeight / 7)
             .padding([.leading, .trailing])
         }
     }
