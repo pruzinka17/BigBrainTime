@@ -67,23 +67,6 @@ struct EndGameView: View {
 
 private extension EndGameView {
     
-    //MARK: - Return to game setup button
-    
-    @ViewBuilder func makeReturnButton(proxy: GeometryProxy) -> some View {
-        
-        let itemWidth = proxy.frame(in: .local).width * 0.5
-        let itemHeight = proxy.frame(in: .local).height * 0.04
-        
-        Button(Constants.returnButtonTitle) {
-            
-            onFinish()
-            dismissCurrentView()
-        }
-        .buttonStyle(MainButtonStyle(width: itemWidth, height: itemHeight))
-        .fontWeight(.bold)
-        .foregroundColor(Color.white)
-    }
-    
     //MARK: - AllQuestions
     
     @ViewBuilder func makeQuestionTab(question: Question) -> some View {
@@ -182,7 +165,7 @@ private extension EndGameView {
                     
                     HStack {
                         
-                        Text("#\(index + 1)")
+                        Text("#\(player.place)")
                             .foregroundColor(.Shared.secondary)
                             .fontWeight(.bold)
                         
@@ -244,6 +227,10 @@ private extension EndGameView {
         
         VStack {
             
+            Text("Charts")
+                .fontWeight(.bold)
+                .foregroundColor(.white)
+            
             TabView {
                 
                 VStack {
@@ -294,6 +281,24 @@ private extension EndGameView {
             .tabViewStyle(.page(indexDisplayMode: .never))
         }
         .frame(height: chartsHeight)
+    }
+    
+    //MARK: - Return to game setup button
+    
+    @ViewBuilder func makeReturnButton(proxy: GeometryProxy) -> some View {
+        
+        let itemWidth = proxy.frame(in: .local).width * 0.5
+        let itemHeight = proxy.frame(in: .local).height * 0.04
+        
+        Button(Constants.returnButtonTitle) {
+            
+            onFinish()
+            dismissCurrentView()
+        }
+        .buttonStyle(MainButtonStyle(width: itemWidth, height: itemHeight))
+        .fontWeight(.bold)
+        .foregroundColor(Color.white)
+        .padding(.top)
     }
 }
 

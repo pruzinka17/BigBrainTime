@@ -35,12 +35,23 @@ private extension EndGameViewPresenter {
         let game = context.game
         let playerAnswers = context.playerAnswers
         
-        let playerScores = game.players.map( { $0.score } )
-        let totalScore = playerScores.reduce(0, +)
+        let allPlayerScores = game.players.map( { $0.score } )
+        let totalScore = allPlayerScores.reduce(0, +)
         let averageScore = totalScore / game.players.count
         let maxScore = game.questions.count * 100
         
         var players: [EndGameViewModel.Player] = []
+        
+        var playerScores: [Int] = []
+        
+        for score in allPlayerScores {
+            
+            if !playerScores.contains(score) {
+                playerScores.append(score)
+            }
+        }
+        
+        playerScores = playerScores.sorted(by: { $0 > $1 } )
         
         for (playerId, anwswerIds) in playerAnswers {
             
@@ -81,9 +92,16 @@ private extension EndGameViewPresenter {
                 }
             }
             
+            guard
+             let playerPlace = playerScores.firstIndex(where: { $0 == gamePlayer.score } )
+            else {
+                continue
+            }
+            
             let player = EndGameViewModel.Player(
                 name: gamePlayer.name,
                 score: gamePlayer.score,
+                place: playerPlace + 1,
                 questions: playerQuestions
             )
             

@@ -18,6 +18,7 @@ struct EndGameViewModel {
         
         let name: String
         let score: Int
+        let place: Int
         let questions: [Question]
         
         struct Question {
