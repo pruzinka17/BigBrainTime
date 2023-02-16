@@ -208,7 +208,7 @@ private extension GameSetupView {
                     
                     if !presenter.viewModel.categories.isEmpty {
                         
-                        makeCategorySelection()
+                        makeCategorySelection(frameHeight: frameHeight)
                     } else {
                         
                         Text(Constants.categoryLoadFailed)
@@ -224,11 +224,11 @@ private extension GameSetupView {
                     }
                 }
             }
-            .frame(height: frameHeight * Constants.caterogyHeightMultiplier)
+            .frame(height: frameHeight * Constants.caterogyWrapperHeightMultiplier)
         }
     }
     
-    @ViewBuilder func makeCategorySelection() -> some View {
+    @ViewBuilder func makeCategorySelection(frameHeight: CGFloat) -> some View {
         
         ScrollView(.horizontal, showsIndicators: false) {
             
@@ -402,7 +402,8 @@ private extension GameSetupView {
         
         static let playerBubbleHeightMultiplier: CGFloat = 0.14
         
-        static let caterogyHeightMultiplier: CGFloat = 0.1
+        static let caterogyWrapperHeightMultiplier: CGFloat = 0.1
+        static let categoryItemHeightMultiplier: CGFloat = 0.09
         
         static let startGameButtonHeightMultiplier: CGFloat = 0.04
         static let startGameButtonWidthMultiplier: CGFloat = 0.5

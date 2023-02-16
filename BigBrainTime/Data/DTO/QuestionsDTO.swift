@@ -7,32 +7,6 @@
 
 import Foundation
 
-//struct QuestionsDTO: Codable {
-//
-//    let questions: [QuestionDTO]
-//
-//    enum CodingsKeys: String, CodingKey {
-//
-//        case category = "category"
-//        case correctAnswer = "correctAnswer"
-//        case incorrectAnswers = "incorrectAnswers"
-//        case question = "question"
-//    }
-//
-//    init(from decoder: Decoder) throws {
-//
-//        var container = try decoder.container(keyedBy: CodingsKeys.self)
-//
-//        self.questions = try container.decode([QuestionDTO].self, forKey: CodingsKeys.question)
-//
-//        for value in container {
-//
-//            let ccategory = try container.decode([QuestionDTO].self, forKey: CodingsKeys.question)
-//            let
-//        }
-//    }
-//}
-
 struct QuestionDTO: Codable {
     
     let category: String
